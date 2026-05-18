@@ -1,0 +1,15 @@
+/*!
+Theme Name: AI Builder Furniture
+Theme URI: https://example.com/templates/furniture
+Author: CMS Platform
+Author URI: https://example.com
+Description: Furniture shop template (WooCommerce + ai-builder-plugin) — Vietnamese carpentry storefront.
+Version: 1.0.0
+Tested up to: 6.6
+Requires PHP: 8.1
+License: Proprietary
+Text Domain: ai-builder-furniture
+Tags: e-commerce, woocommerce, custom-colors, custom-logo, custom-menu, featured-images, full-width-template, threaded-comments, translation-ready
+*/
+
+/* Reset and base styles are loaded from assets/css/main.css via wp_enqueue */
