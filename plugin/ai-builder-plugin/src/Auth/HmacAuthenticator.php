@@ -63,6 +63,11 @@ final class HmacAuthenticator
     {
         $route = $request->get_route();
         $query = $request->get_query_params();
+        // `rest_route` is a routing artifact, present when the API is reached
+        // via /?rest_route=… instead of pretty /wp-json/ permalinks. It is not a
+        // real query parameter — drop it so the signature is identical whether
+        // the caller used pretty permalinks or the rest_route fallback.
+        unset($query['rest_route']);
         if (!empty($query)) {
             ksort($query);
             $qs = http_build_query($query);

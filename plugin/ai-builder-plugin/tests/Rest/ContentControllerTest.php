@@ -59,4 +59,21 @@ final class ContentControllerTest extends TestCase
         $body = $resp->get_data();
         $this->assertSame('products.woocommerce_not_active', $body['error']['code']);
     }
+
+    public function test_delete_product_route_is_registered_and_hmac_signed(): void
+    {
+        // WooCommerce is not loaded in test env → the DELETE route exists,
+        // passes HMAC auth, reaches the controller and hits the Woo guard.
+        $req = $this->buildSignedRequest('DELETE', '/ai-builder/v1/content/products/tu-tho');
+        $resp = rest_do_request($req);
+        $this->assertSame(412, $resp->get_status());
+        $this->assertSame('products.woocommerce_not_active', $resp->get_data()['error']['code']);
+    }
+
+    public function test_delete_product_rejects_unsigned_request(): void
+    {
+        $req = new \WP_REST_Request('DELETE', '/ai-builder/v1/content/products/tu-tho');
+        $resp = rest_do_request($req);
+        $this->assertSame(401, $resp->get_status());
+    }
 }

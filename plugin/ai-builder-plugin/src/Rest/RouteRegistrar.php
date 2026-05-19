@@ -43,6 +43,12 @@ final class RouteRegistrar
             'permission_callback' => $auth,
         ]);
 
+        register_rest_route($ns, '/content/products/(?P<slug>[a-z0-9][a-z0-9_-]*)', [
+            'methods'             => 'DELETE',
+            'callback'            => [ContentController::class, 'deleteProduct'],
+            'permission_callback' => $auth,
+        ]);
+
         register_rest_route($ns, '/media/upload', [
             'methods'             => 'POST',
             'callback'            => [MediaController::class, 'upload'],

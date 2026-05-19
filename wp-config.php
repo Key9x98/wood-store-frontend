@@ -1,8 +1,4 @@
 <?php
-define('DB_NAME', 'wordpress');
-define('DB_USER', 'wpuser');
-define('DB_PASSWORD', 'strong_password');
-define('DB_HOST', 'localhost');
 /**
  * The base configuration for WordPress
  *
@@ -22,22 +18,17 @@ define('DB_HOST', 'localhost');
  * @package WordPress
  */
 
-// ** Database settings - You can get this info from your web host ** //
-/** The name of the database for WordPress */
-define( 'DB_NAME', 'database_name_here' );
-
-/** Database username */
-define( 'DB_USER', 'username_here' );
-
-/** Database password */
-define( 'DB_PASSWORD', 'password_here' );
-
-/** Database hostname */
-define( 'DB_HOST', 'localhost' );
-
+// ** Database settings — DB_NAME / DB_USER / DB_PASSWORD / DB_HOST defined at the top of this file. ** //
 /** Database charset to use in creating database tables. */
 define( 'DB_CHARSET', 'utf8mb4' );
 
+define('DB_NAME', 'wordpress');
+
+define('DB_USER', 'wpuser');
+
+define('DB_PASSWORD', 'strong_password');
+
+define('DB_HOST', 'localhost');
 /** The database collate type. Don't change this if in doubt. */
 define( 'DB_COLLATE', '' );
 

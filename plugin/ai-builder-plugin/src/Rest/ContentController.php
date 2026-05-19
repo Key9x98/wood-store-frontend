@@ -68,6 +68,37 @@ final class ContentController
         return $resp;
     }
 
+    /**
+     * DELETE /content/products/{slug} — trash a product. Idempotent: a slug
+     * that no longer exists still returns 200 with deleted=false.
+     */
+    public static function deleteProduct(WP_REST_Request $request): WP_REST_Response
+    {
+        $start = microtime(true);
+        $self = new self();
+
+        if (!class_exists('WooCommerce')) {
+            return $self->err('products.woocommerce_not_active', 'WooCommerce is required', 412);
+        }
+
+        $slug = sanitize_title((string) $request->get_param('slug'));
+        if ($slug === '') {
+            return $self->err('products.invalid_input', 'slug required', 400);
+        }
+
+        $result = (new ContentSync())->deleteProductBySlug($slug);
+
+        $resp = $self->ok($result);
+        Logger::info('/content/products/{slug}', [
+            'method' => 'DELETE',
+            'status' => $resp->get_status(),
+            'duration_ms' => (int) ((microtime(true) - $start) * 1000),
+            'slug' => $slug,
+            'deleted' => $result['deleted'],
+        ]);
+        return $resp;
+    }
+
     private function doUpsert(WP_REST_Request $request, string $postType, string $route): WP_REST_Response
     {
         $start = microtime(true);

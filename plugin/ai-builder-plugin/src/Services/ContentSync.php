@@ -105,4 +105,22 @@ final class ContentSync
             'post_type' => 'product',
         ];
     }
+
+    /**
+     * Trash a WooCommerce product by slug. Idempotent — a missing slug is not
+     * an error, it returns deleted=false so a repeated delete-sync is safe.
+     *
+     * @return array{slug:string, id:int, deleted:bool}
+     */
+    public function deleteProductBySlug(string $slug): array
+    {
+        $existing = get_page_by_path($slug, OBJECT, 'product');
+        if (!$existing) {
+            return ['slug' => $slug, 'id' => 0, 'deleted' => false];
+        }
+
+        wp_trash_post((int) $existing->ID);
+
+        return ['slug' => $slug, 'id' => (int) $existing->ID, 'deleted' => true];
+    }
 }

@@ -37,4 +37,13 @@ final class MediaControllerTest extends TestCase
         $this->assertSame('media.bad_mime', $body['error']['code']);
         @unlink($tmp);
     }
+
+    public function test_rejects_json_body_without_source_url(): void
+    {
+        // JSON branch: a body with neither a `file` part nor `source_url`.
+        $req = $this->buildSignedRequest('POST', '/ai-builder/v1/media/upload', ['foo' => 'bar']);
+        $resp = rest_do_request($req);
+        $this->assertSame(400, $resp->get_status());
+        $this->assertSame('media.no_file', $resp->get_data()['error']['code']);
+    }
 }

@@ -3,7 +3,7 @@
  * Plugin Name:       AI Builder
  * Plugin URI:        https://example.com/ai-builder-plugin
  * Description:       Remote-control REST endpoints for the Express CMS to drive a WordPress site (content sync, media upload, fields, Elementor, cache, themes).
- * Version:           0.2.0
+ * Version:           0.3.0
  * Requires at least: 6.4
  * Requires PHP:      8.1
  * Author:            CMS Platform
