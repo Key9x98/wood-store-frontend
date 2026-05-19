@@ -54,20 +54,54 @@ final class ThemesController
         return $resp;
     }
 
-    /** POST /themes — install a theme from an uploaded .zip (`overwrite=1` to replace an existing one). */
+    /**
+     * POST /themes — install a theme package (`overwrite=1` to replace an existing one).
+     * Accepts EITHER a multipart `file` field OR a JSON body
+     * `{ "zip_b64": "<base64 .zip>", "overwrite": true }`. The Express deploy
+     * worker uses the JSON form so the HMAC signature stays a simple string.
+     */
     public static function install(WP_REST_Request $request): WP_REST_Response
     {
         $start = microtime(true);
         $self = new self();
+        $overwrite = filter_var($request->get_param('overwrite'), FILTER_VALIDATE_BOOLEAN);
 
         $files = $request->get_file_params();
-        if (!isset($files['file']) || !is_array($files['file'])) {
-            Logger::warn('/themes', ['method' => 'POST', 'status' => 400, 'duration_ms' => self::ms($start)]);
-            return $self->err('themes.no_file', 'A `file` field with a .zip package is required (multipart/form-data).', 400);
+        $tmpToCleanup = '';
+
+        if (isset($files['file']) && is_array($files['file'])) {
+            $file = $files['file'];
+        } else {
+            $params = $request->get_json_params() ?: $request->get_body_params();
+            $b64 = is_array($params) ? (string) ($params['zip_b64'] ?? '') : '';
+            if ($b64 === '') {
+                Logger::warn('/themes', ['method' => 'POST', 'status' => 400, 'duration_ms' => self::ms($start)]);
+                return $self->err('themes.no_file', 'A `file` (multipart) or `zip_b64` (JSON) .zip package is required.', 400);
+            }
+            $bytes = base64_decode($b64, true);
+            if ($bytes === false) {
+                return $self->err('themes.bad_payload', '`zip_b64` is not valid base64.', 400);
+            }
+            // Core tempnam — `wp_tempnam()` lives in wp-admin/includes/file.php
+            // which is not loaded on a REST request until installFromZip().
+            $tmpToCleanup = (string) tempnam(get_temp_dir(), 'aib-theme');
+            if ($tmpToCleanup === '') {
+                return $self->err('themes.tmp_failed', 'Could not allocate a temp file for the theme package.', 500);
+            }
+            file_put_contents($tmpToCleanup, $bytes);
+            $file = [
+                'name' => 'theme.zip',
+                'type' => 'application/zip',
+                'tmp_name' => $tmpToCleanup,
+                'error' => UPLOAD_ERR_OK,
+                'size' => strlen($bytes),
+            ];
         }
 
-        $overwrite = filter_var($request->get_param('overwrite'), FILTER_VALIDATE_BOOLEAN);
-        $result = (new ThemeManager())->installFromZip($files['file'], $overwrite);
+        $result = (new ThemeManager())->installFromZip($file, $overwrite);
+        if ($tmpToCleanup !== '') {
+            @unlink($tmpToCleanup);
+        }
         $resp = $result instanceof WP_Error ? $self->fromError($result) : $self->ok($result, 201);
 
         Logger::info('/themes', [

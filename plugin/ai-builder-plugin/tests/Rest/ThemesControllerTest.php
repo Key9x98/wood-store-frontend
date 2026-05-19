@@ -71,6 +71,15 @@ final class ThemesControllerTest extends TestCase
         @unlink($tmp);
     }
 
+    public function test_install_rejects_invalid_base64(): void
+    {
+        $req = $this->buildSignedRequest('POST', '/ai-builder/v1/themes', ['zip_b64' => '!!!not-base64!!!']);
+        $resp = rest_do_request($req);
+
+        $this->assertSame(400, $resp->get_status());
+        $this->assertSame('themes.bad_payload', $resp->get_data()['error']['code']);
+    }
+
     public function test_activate_unknown_theme_returns_404(): void
     {
         $req = $this->buildSignedRequest('POST', '/ai-builder/v1/themes/no-such-theme/activate');
