@@ -1,0 +1,1098 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Retail 1.3.4\n"
+"POT-Creation-Date: 2020-06-22 09:25+0100\n"
+"PO-Revision-Date: 2020-06-22 09:25+0100\n"
+"Last-Translator: \n"
+"Language-Team: UXL Themes\n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.3.1\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-Flags-xgettext: --add-comments=translators:\n"
+"X-Poedit-WPHeader: style.css\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
+"X-Poedit-SearchPathExcluded-1: functions/translations.php\n"
+
+#: 404.php:11
+msgid "Oops! That page can&rsquo;t be found."
+msgstr "Oje! Die Seite wurde nicht gefunden."
+
+#: 404.php:13
+msgid "Maybe try a search?"
+msgstr "Vielleicht erneut suchen?"
+
+#: 404.php:19
+#, fuzzy
+msgid "Browse our pages."
+msgstr "Stöbern Sie auf unseren Seiten."
+
+#. translators: %s: post title
+#: comments.php:33
+#, php-format
+msgctxt "comments title"
+msgid "One Reply to &ldquo;%s&rdquo;"
+msgstr "Ein Kommentar zu &ldquo;%s&rdquo;"
+
+#: comments.php:38
+#, php-format
+msgctxt "comments title"
+msgid "%1$s Reply to &ldquo;%2$s&rdquo;"
+msgid_plural "%1$s Replies to &ldquo;%2$s&rdquo;"
+msgstr[0] "%1$s Antwort auf &ldquo;%2$s&rdquo;"
+msgstr[1] "%1$s Antworten auf &ldquo;%2$s&rdquo;"
+
+#: comments.php:62
+msgid "Previous"
+msgstr "Zurück"
+
+#: comments.php:63
+msgid "Next"
+msgstr "Weiter"
+
+#: comments.php:71
+msgid "Comments are closed."
+msgstr "Kommentare sind geschlossen."
+
+#: content-front-page.php:18 content-page.php:21 content-search.php:53
+#: content-single.php:34 content.php:53
+msgid "Pages:"
+msgstr "Seiten:"
+
+#. translators: %s: Name of current post
+#: content-front-page.php:29 content-page.php:32
+#, php-format
+msgid "Edit %s"
+msgstr "%s bearbeiten"
+
+#: content-none.php:11
+msgid "Nothing Found"
+msgstr "Nichts gefunden"
+
+#: content-none.php:15
+#, php-format
+msgid ""
+"Ready to publish your first post? <a href=\"%1$s\">Get started here</a>."
+msgstr ""
+"Sind Sie bereit Ihren ersten Beitrag zu veröffentlichen?  <a href=\"%1$s"
+"\">Starten Sie hier</a>."
+
+#: content-none.php:19
+msgid ""
+"Sorry, but nothing matched your search terms. Please try again with some "
+"different keywords."
+msgstr ""
+"Es tut uns leid. Ihre Sucher ergab keinen Treffer, Bitte versuchen Sie es "
+"mit einem anderen Begriff."
+
+#: content-none.php:24
+msgid ""
+"It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps "
+"searching can help."
+msgstr ""
+"Es scheint, dass wir nicht finden können, was du suchst. Vielleicht kann die "
+"Suche helfen."
+
+#: content-related.php:19
+msgid "Related"
+msgstr "Ähnliche"
+
+#: content-search.php:42 content.php:42
+msgid "No Title"
+msgstr "Kein Titel"
+
+#: content-search.php:57 content.php:57
+msgid "Continue Reading"
+msgstr "Weiterlesen"
+
+#: functions.php:35
+msgid "Primary Menu"
+msgstr "Hauptmenü"
+
+#: functions.php:36
+msgid "Footer Menu"
+msgstr "Footer Menü"
+
+#: functions.php:122
+msgid "Blog Sidebar"
+msgstr "Blog Seitenleiste"
+
+#: functions.php:131
+msgid "Page Sidebar"
+msgstr "Seiten Sidebar"
+
+#: functions.php:140
+msgid "Shop Sidebar"
+msgstr "Shop Seitenleiste"
+
+#: functions.php:142
+#, fuzzy
+msgid "Requires WooCommerce plugin."
+msgstr "Benötigt WooCommerce Plugin."
+
+#: functions.php:150
+msgid "Shop Filters"
+msgstr "Shop-Filter"
+
+#: functions.php:152
+#, fuzzy
+msgid ""
+"Horizontal widget area for product archives. Requires WooCommerce plugin."
+msgstr ""
+"Horizontaler Widget-Bereich für Produktarchive. Benötigt WooCommerce Plugin."
+
+#: functions.php:160
+msgid "Top Bar"
+msgstr "Top Bar"
+
+#: functions.php:162
+#, fuzzy
+msgid "Add your own content above the header."
+msgstr "Füge deinen eigenen Inhalt über der Kopfzeile hinzu."
+
+#: functions.php:170
+#, fuzzy
+msgid "Offers Bar"
+msgstr "Angebotsleiste"
+
+#: functions.php:172
+#, fuzzy
+msgid "Add your own content below the site masthead."
+msgstr "Fügen Sie Ihre eigenen Inhalte unter dem Impressum der Website hinzu."
+
+#: functions.php:180
+#, fuzzy
+msgid "Homepage Slider/Hero Section"
+msgstr "Homepage Slider/Hero-Bereich"
+
+#: functions.php:182
+#, fuzzy
+msgid "The large image/hero/slider area below the masthead on the homepage."
+msgstr ""
+"Der große Bild-/Helden-/Schieberbereich unter dem Mastkopf auf der Homepage."
+
+#: functions.php:190
+msgid "Top Footer"
+msgstr "Top Footer"
+
+#: functions.php:191
+#, fuzzy
+msgid "Full width area above the footer columns."
+msgstr "Voller Breitenbereich über den Spalten der Fußzeile."
+
+#: functions.php:201
+msgid "Footer Column 1"
+msgstr "Fußzeile Spalte 1"
+
+#: functions.php:211
+msgid "Footer Column 2"
+msgstr "Fußzeile Spalte 2"
+
+#: functions.php:221
+msgid "Footer Column 3"
+msgstr "Fußzeile Spalte 3"
+
+#: functions.php:247 functions.php:316
+msgctxt "Google fonts: on or off"
+msgid "on"
+msgstr "am"
+
+#: functions.php:278 functions.php:345
+msgctxt "Add new subset (greek, cyrillic, devanagari, vietnamese)"
+msgid "no-subset"
+msgstr "Keine Untergruppe"
+
+#: functions.php:438
+#, fuzzy
+#| msgid "Site Title"
+msgid "Starter Sites"
+msgstr "Seitentitel"
+
+#: functions/class-tgm-plugin-activation.php:327
+#: functions/class-tgm-plugin-activation.php:328
+#, fuzzy
+msgid "Recommended Plugin"
+msgstr "Benötigt WooCommerce Plugin."
+
+#. translators: %s: plugin name.
+#: functions/class-tgm-plugin-activation.php:330
+#, php-format
+msgid "Installing Plugin: %s"
+msgstr ""
+
+#. translators: %s: plugin name.
+#: functions/class-tgm-plugin-activation.php:332
+#, php-format
+msgid "Updating Plugin: %s"
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:333
+msgid "Something went wrong with the plugin API."
+msgstr ""
+
+#. translators: 1: plugin name(s).
+#: functions/class-tgm-plugin-activation.php:336
+#, php-format
+msgid "This theme requires the following plugin: %1$s."
+msgid_plural "This theme requires the following plugins: %1$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: 1: plugin name(s).
+#: functions/class-tgm-plugin-activation.php:342
+#, php-format
+msgid "Setup your new website quickly with %1$s."
+msgid_plural "This theme recommends the following plugins: %1$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: 1: plugin name(s).
+#: functions/class-tgm-plugin-activation.php:348
+#, php-format
+msgid ""
+"The following plugin needs to be updated to its latest version to ensure "
+"maximum compatibility with this theme: %1$s."
+msgid_plural ""
+"The following plugins need to be updated to their latest version to ensure "
+"maximum compatibility with this theme: %1$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: 1: plugin name(s).
+#: functions/class-tgm-plugin-activation.php:354
+#, php-format
+msgid "There is an update available for: %1$s."
+msgid_plural "There are updates available for the following plugins: %1$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: 1: plugin name(s).
+#: functions/class-tgm-plugin-activation.php:360
+#, php-format
+msgid "The following required plugin is currently inactive: %1$s."
+msgid_plural "The following required plugins are currently inactive: %1$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: 1: plugin name(s).
+#: functions/class-tgm-plugin-activation.php:367
+#, php-format
+msgid ""
+"Did you know you can import demo content and set up your new website quickly "
+"and easily with %1$s?"
+msgid_plural "The following recommended plugins are currently inactive: %1$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#: functions/class-tgm-plugin-activation.php:373
+msgid "Install plugin"
+msgid_plural "Install plugins"
+msgstr[0] ""
+msgstr[1] ""
+
+#: functions/class-tgm-plugin-activation.php:378
+msgid "Update plugin"
+msgid_plural "Update plugins"
+msgstr[0] ""
+msgstr[1] ""
+
+#: functions/class-tgm-plugin-activation.php:383
+msgid "Activate plugin"
+msgid_plural "Activate plugins"
+msgstr[0] ""
+msgstr[1] ""
+
+#: functions/class-tgm-plugin-activation.php:387
+msgid "Return to Required Plugins Installer"
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:388
+#: functions/class-tgm-plugin-activation.php:829
+#: functions/class-tgm-plugin-activation.php:2536
+#: functions/class-tgm-plugin-activation.php:3583
+msgid "Return to the Dashboard"
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:389
+#: functions/class-tgm-plugin-activation.php:3162
+msgid "Plugin activated successfully."
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:390
+#: functions/class-tgm-plugin-activation.php:2955
+msgid "The following plugin was activated successfully:"
+msgid_plural "The following plugins were activated successfully:"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: 1: plugin name.
+#: functions/class-tgm-plugin-activation.php:392
+#, php-format
+msgid "No action taken. Plugin %1$s was already active."
+msgstr ""
+
+#. translators: 1: plugin name.
+#: functions/class-tgm-plugin-activation.php:394
+#, php-format
+msgid ""
+"Plugin not activated. A higher version of %s is needed for this theme. "
+"Please update the plugin."
+msgstr ""
+
+#. translators: 1: dashboard link.
+#: functions/class-tgm-plugin-activation.php:396
+#, php-format
+msgid "All plugins installed and activated successfully. %1$s"
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:397
+msgid "Dismiss this notice"
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:398
+msgid ""
+"There are one or more required or recommended plugins to install, update or "
+"activate."
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:399
+msgid "Please contact the administrator of this site for help."
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:524
+msgid "This plugin needs to be updated to be compatible with your theme."
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:525
+msgid "Update Required"
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:936
+msgid ""
+"The remote plugin package does not contain a folder with the desired slug "
+"and renaming did not work."
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:936
+#: functions/class-tgm-plugin-activation.php:939
+msgid ""
+"Please contact the plugin provider and ask them to package their plugin "
+"according to the WordPress guidelines."
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:939
+msgid ""
+"The remote plugin package consists of more than one file, but the files are "
+"not packaged in a folder."
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:1094
+msgid "Thank you for using the Retail theme."
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:1123
+#: functions/class-tgm-plugin-activation.php:2951
+msgctxt "plugin A *and* plugin B"
+msgid "and"
+msgstr ""
+
+#. translators: %s: version number
+#: functions/class-tgm-plugin-activation.php:1985
+#, php-format
+msgid "TGMPA v%s"
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:2276
+msgid "Required"
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:2279
+msgid "Recommended"
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:2295
+msgid "WordPress Repository"
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:2298
+msgid "External Source"
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:2301
+msgid "Pre-Packaged"
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:2318
+msgid "Not Installed"
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:2322
+msgid "Installed But Not Activated"
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:2324
+msgid "Active"
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:2330
+msgid "Required Update not Available"
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:2333
+msgid "Requires Update"
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:2336
+msgid "Update recommended"
+msgstr ""
+
+#. translators: 1: install status, 2: update status
+#: functions/class-tgm-plugin-activation.php:2345
+#, fuzzy, php-format
+#| msgid "Welcome to %1$s %2$s"
+msgctxt "Install/Update Status"
+msgid "%1$s, %2$s"
+msgstr "Willkommen zu %1$s %2$s"
+
+#. translators: 1: number of plugins.
+#: functions/class-tgm-plugin-activation.php:2391
+#, fuzzy, php-format
+#| msgid "Edit <span class=\"screen-reader-text\">%s</span>"
+msgctxt "plugins"
+msgid "All <span class=\"count\">(%s)</span>"
+msgid_plural "All <span class=\"count\">(%s)</span>"
+msgstr[0] "Bearbeiten <span class=\"screen-reader-text\">%s</span>"
+msgstr[1] "Bearbeiten <span class=\"screen-reader-text\">%s</span>"
+
+#. translators: 1: number of plugins.
+#: functions/class-tgm-plugin-activation.php:2395
+#, fuzzy, php-format
+#| msgid "Edit <span class=\"screen-reader-text\">%s</span>"
+msgid "To Install <span class=\"count\">(%s)</span>"
+msgid_plural "To Install <span class=\"count\">(%s)</span>"
+msgstr[0] "Bearbeiten <span class=\"screen-reader-text\">%s</span>"
+msgstr[1] "Bearbeiten <span class=\"screen-reader-text\">%s</span>"
+
+#. translators: 1: number of plugins.
+#: functions/class-tgm-plugin-activation.php:2399
+#, fuzzy, php-format
+#| msgid "Edit <span class=\"screen-reader-text\">%s</span>"
+msgid "Update Available <span class=\"count\">(%s)</span>"
+msgid_plural "Update Available <span class=\"count\">(%s)</span>"
+msgstr[0] "Bearbeiten <span class=\"screen-reader-text\">%s</span>"
+msgstr[1] "Bearbeiten <span class=\"screen-reader-text\">%s</span>"
+
+#. translators: 1: number of plugins.
+#: functions/class-tgm-plugin-activation.php:2403
+#, fuzzy, php-format
+#| msgid "Edit <span class=\"screen-reader-text\">%s</span>"
+msgid "To Activate <span class=\"count\">(%s)</span>"
+msgid_plural "To Activate <span class=\"count\">(%s)</span>"
+msgstr[0] "Bearbeiten <span class=\"screen-reader-text\">%s</span>"
+msgstr[1] "Bearbeiten <span class=\"screen-reader-text\">%s</span>"
+
+#: functions/class-tgm-plugin-activation.php:2485
+msgctxt "as in: \"version nr unknown\""
+msgid "unknown"
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:2493
+msgid "Installed version:"
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:2501
+msgid "Minimum required version:"
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:2513
+msgid "Available version:"
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:2536
+msgid "No plugins to install, update or activate."
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:2550
+msgid "Plugin"
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:2551
+msgid "Source"
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:2552
+msgid "Type"
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:2556
+msgid "Version"
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:2557
+msgid "Status"
+msgstr ""
+
+#. translators: %2$s: plugin name in screen reader markup
+#: functions/class-tgm-plugin-activation.php:2606
+#, php-format
+msgid "Install %2$s"
+msgstr ""
+
+#. translators: %2$s: plugin name in screen reader markup
+#: functions/class-tgm-plugin-activation.php:2611
+#, php-format
+msgid "Update %2$s"
+msgstr ""
+
+#. translators: %2$s: plugin name in screen reader markup
+#: functions/class-tgm-plugin-activation.php:2617
+#, php-format
+msgid "Activate %2$s"
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:2687
+msgid "Upgrade message from the plugin author:"
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:2720
+msgid "Install"
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:2726
+msgid "Update"
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:2729
+msgid "Activate"
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:2760
+msgid "No plugins were selected to be installed. No action taken."
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:2762
+msgid "No plugins were selected to be updated. No action taken."
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:2803
+msgid "No plugins are available to be installed at this time."
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:2805
+msgid "No plugins are available to be updated at this time."
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:2911
+msgid "No plugins were selected to be activated. No action taken."
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:2937
+msgid "No plugins are available to be activated at this time."
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:3161
+msgid "Plugin activation failed."
+msgstr ""
+
+#. translators: 1: plugin name, 2: action number 3: total number of actions.
+#: functions/class-tgm-plugin-activation.php:3501
+#, php-format
+msgid "Updating Plugin %1$s (%2$d/%3$d)"
+msgstr ""
+
+#. translators: 1: plugin name, 2: error message.
+#: functions/class-tgm-plugin-activation.php:3504
+#, php-format
+msgid "An error occurred while installing %1$s: <strong>%2$s</strong>."
+msgstr ""
+
+#. translators: 1: plugin name.
+#: functions/class-tgm-plugin-activation.php:3506
+#, php-format
+msgid "The installation of %1$s failed."
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:3510
+msgid ""
+"The installation and activation process is starting. This process may take a "
+"while on some hosts, so please be patient."
+msgstr ""
+
+#. translators: 1: plugin name.
+#: functions/class-tgm-plugin-activation.php:3512
+#, php-format
+msgid "%1$s installed and activated successfully."
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:3512
+#: functions/class-tgm-plugin-activation.php:3520
+msgid "Show Details"
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:3512
+#: functions/class-tgm-plugin-activation.php:3520
+msgid "Hide Details"
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:3513
+msgid "All installations and activations have been completed."
+msgstr ""
+
+#. translators: 1: plugin name, 2: action number 3: total number of actions.
+#: functions/class-tgm-plugin-activation.php:3515
+#, php-format
+msgid "Installing and Activating Plugin %1$s (%2$d/%3$d)"
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:3518
+msgid ""
+"The installation process is starting. This process may take a while on some "
+"hosts, so please be patient."
+msgstr ""
+
+#. translators: 1: plugin name.
+#: functions/class-tgm-plugin-activation.php:3520
+#, php-format
+msgid "%1$s installed successfully."
+msgstr ""
+
+#: functions/class-tgm-plugin-activation.php:3521
+msgid "All installations have been completed."
+msgstr ""
+
+#. translators: 1: plugin name, 2: action number 3: total number of actions.
+#: functions/class-tgm-plugin-activation.php:3523
+#, php-format
+msgid "Installing Plugin %1$s (%2$d/%3$d)"
+msgstr ""
+
+#: functions/customizer.php:29
+#, fuzzy
+msgid "Disable Site Title first letter styling"
+msgstr ""
+"Deaktivieren Sie die Gestaltung des ersten Buchstabens des Seitentitels."
+
+#: functions/customizer.php:47
+#, fuzzy
+msgid "Highlight/Link Color"
+msgstr "Hervorheben/Link-Farbe"
+
+#: functions/customizer.php:57
+msgid "Layout Options"
+msgstr "Layout Optionen"
+
+#: functions/customizer.php:75
+msgid "Enable Boxed Layout"
+msgstr "Boxed-Layout aktivieren"
+
+#: functions/customizer.php:93
+msgid "Container Width"
+msgstr "Container Breite"
+
+#: functions/customizer.php:115
+#, fuzzy
+msgid "Enable Sticky Header"
+msgstr "Aktivieren der klebrigen Fußzeile"
+
+#: functions/customizer.php:134
+#, fuzzy
+msgid "Header Search Style"
+msgstr "Kopfzeilen-Suchstil"
+
+#: functions/customizer.php:157
+#, fuzzy
+msgid "Disable Search Form in Header"
+msgstr "Suchformular im Kopf deaktivieren"
+
+#: functions/customizer.php:175
+msgid "Menu Position"
+msgstr "Menü Position"
+
+#: functions/customizer.php:199
+#, fuzzy
+msgid "Blog - Grid Layout"
+msgstr "Blog - Rasterlayout"
+
+#: functions/customizer.php:230
+msgid "Sidebar Position"
+msgstr "Sidebar-Position"
+
+#: functions/customizer.php:234
+msgid "Left"
+msgstr "Links"
+
+#: functions/customizer.php:235
+msgid "Right"
+msgstr "Rechts"
+
+#: functions/customizer.php:252
+#, fuzzy
+msgid "Enable Sticky Footer"
+msgstr "Aktivieren der klebrigen Fußzeile"
+
+#: functions/customizer.php:262 functions/customizer.php:308
+msgid "Homepage Sections"
+msgstr "Homepage-Abschnitt"
+
+#: functions/customizer.php:263
+#, fuzzy
+msgid ""
+"You should first select a Static Homepage if you have not already done so. "
+"See: \"Homepage Settings\""
+msgstr ""
+"Sie sollten zunächst eine statische Homepage auswählen, wenn Sie dies noch "
+"nicht getan haben. Siehst du: \" Homepage-Einstellungen\""
+
+#: functions/customizer.php:280
+#, fuzzy
+msgid "Activate Sortable Sections"
+msgstr "Sortierbare Abschnitte aktivieren"
+
+#: functions/customizer.php:281
+#, fuzzy
+msgid "Requires WooCommerce Plugin."
+msgstr "Benötigt WooCommerce Plugin."
+
+#: functions/customizer.php:309
+#, fuzzy
+msgid ""
+"Check the box to display. Sortable: drag and drop into your preferred order."
+msgstr ""
+"Aktivieren Sie das Kontrollkästchen, das angezeigt werden soll. Sortierbar: "
+"Drag & Drop in die gewünschte Reihenfolge."
+
+#: functions/customizer.php:320
+#, fuzzy
+msgid "Typography & Fonts"
+msgstr "Typografie & Schriften"
+
+#: functions/customizer.php:332 functions/customizer.php:391
+msgid "Site Title"
+msgstr "Seitentitel"
+
+#: functions/customizer.php:345
+msgid "Navigation"
+msgstr "Navigation"
+
+#: functions/customizer.php:358
+msgid "Content"
+msgstr "Inhalt"
+
+#: functions/customizer.php:371
+msgid "Headings"
+msgstr "Überschriften"
+
+#: functions/customizer.php:409
+msgid "Size"
+msgstr "Größe"
+
+#: functions/customizer.php:430
+msgid "Weight"
+msgstr "Gewicht"
+
+#: functions/customizer.php:448
+msgid "Transform"
+msgstr "Transformieren"
+
+#: functions/customizer.php:451
+msgid "none"
+msgstr "keine"
+
+#: functions/customizer.php:451
+msgid "capitalize"
+msgstr "capitalize"
+
+#: functions/customizer.php:451
+msgid "lowercase"
+msgstr "Kleinbuchstaben"
+
+#: functions/customizer.php:451
+msgid "uppercase"
+msgstr "Großbuchstaben"
+
+#: functions/customizer.php:468
+msgid "Letter Spacing"
+msgstr "Zeichenabstand"
+
+#: functions/customizer.php:480 functions/customizer.php:491
+#: functions/customizer.php:627
+msgid "Go Pro"
+msgstr "Pro erwerben"
+
+#: functions/customizer.php:482 functions/theme-help.php:109
+#, fuzzy
+msgid ""
+"Upgrade to Retail Pro for even more cool features and customization options."
+msgstr ""
+"Aktualisieren Sie auf Retail Pro für noch mehr coole Funktionen und "
+"Anpassungsoptionen."
+
+#: functions/customizer.php:610
+#, fuzzy
+msgid "More options available"
+msgstr "Weitere Optionen verfügbar"
+
+#: functions/customizer.php:619
+msgid "Documentation"
+msgstr "Dokumentation"
+
+#: functions/extras.php:507
+msgid "https://wordpress.org/"
+msgstr "https://wordpress.org/"
+
+#: functions/extras.php:507
+#, php-format
+msgid "Powered by %s"
+msgstr "Bereitgestellt von %s"
+
+#: functions/extras.php:509
+#, fuzzy, php-format
+msgid "Theme: %2$s by %1$s"
+msgstr "Thema: %2$s durch %1$s"
+
+#: functions/extras.php:532
+msgid "options"
+msgstr "Optionen"
+
+#: functions/extras.php:716
+msgid "Page Content"
+msgstr "Seiteninhalt"
+
+#: functions/extras.php:722
+msgid "Product Categories"
+msgstr "Produktkategorien"
+
+#: functions/extras.php:728
+msgid "New products"
+msgstr "Neue Produkte"
+
+#: functions/extras.php:734
+msgid "Featured products"
+msgstr "Hervorgehobene  Produkte"
+
+#: functions/extras.php:740
+msgid "On-sale products"
+msgstr "Ärzte die neu hinzugefügt wurden"
+
+#: functions/extras.php:746
+msgid "Top sellers"
+msgstr "Meistverkaufte Produkte"
+
+#: functions/extras.php:752
+msgid "Top rated products"
+msgstr "Bestbewertete Produkte"
+
+#. translators: used between list items, there is a space after the comma
+#: functions/template-tags.php:52
+msgid ", "
+msgstr ", "
+
+#. translators: 1: list of categories.
+#: functions/template-tags.php:55
+#, php-format
+msgid "Posted in %1$s"
+msgstr "Veröffentlicht in %1$s"
+
+#. translators: %s: post title
+#: functions/template-tags.php:71
+#, php-format
+msgid "Leave a Comment<span class=\"screen-reader-text\"> on %s</span>"
+msgstr ""
+"Hinterlasse einen Kommentar <span class=\"screen-reader-text\"> zu %s</span>"
+
+#. translators: %s: Name of current post. Only visible to screen readers
+#: functions/template-tags.php:88
+#, php-format
+msgid "Edit <span class=\"screen-reader-text\">%s</span>"
+msgstr "Bearbeiten <span class=\"screen-reader-text\">%s</span>"
+
+#: functions/theme-help.php:19 functions/theme-help.php:32
+#, php-format
+msgid "Welcome to %1$s %2$s"
+msgstr "Willkommen zu %1$s %2$s"
+
+#: functions/theme-help.php:19
+msgid "Theme Help"
+msgstr "Theme Hilfe"
+
+#: functions/theme-help.php:38
+#, fuzzy
+msgid "Theme Links"
+msgstr "Themenlinks"
+
+#: functions/theme-help.php:39
+#, fuzzy
+msgid "Theme Page"
+msgstr "Themenseite"
+
+#: functions/theme-help.php:40
+msgid "Theme Demo"
+msgstr "Theme-Demo"
+
+#: functions/theme-help.php:41 functions/theme-help.php:56
+msgid "Theme Documentation"
+msgstr "Theme-Dokumentation"
+
+#: functions/theme-help.php:42
+msgid "Theme Support"
+msgstr "Theme Support"
+
+#: functions/theme-help.php:49
+#, php-format
+msgid "Getting Started with %s"
+msgstr "Erste Schritte mit %s"
+
+#: functions/theme-help.php:59
+#, fuzzy
+msgid ""
+"Do you need help to setup, configure and customize this theme? Check out the "
+"extensive theme documentation on our website."
+msgstr ""
+"Brauchst du Hilfe bei der Einrichtung, Konfiguration und Anpassung dieses "
+"Themas? Schauen Sie sich die ausführliche Themedokumentation auf unserer "
+"Website an."
+
+#: functions/theme-help.php:63
+#, php-format
+msgid "View %s Documentation"
+msgstr "Anzeigen %s Dokumentation"
+
+#: functions/theme-help.php:69
+msgid "Theme Options"
+msgstr "Theme Optionen"
+
+#: functions/theme-help.php:72
+#, fuzzy, php-format
+msgid "%s makes use of the Customizer for the theme settings."
+msgstr "%s verwendet den Customizer für die Theme-Einstellungen."
+
+#: functions/theme-help.php:76
+msgid "Customize Theme"
+msgstr "Anpassen des Themes"
+
+#: functions/theme-help.php:82
+#, fuzzy
+#| msgid "Page Content"
+msgid "Demo Content"
+msgstr "Seiteninhalt"
+
+#. translators: %s: theme name.
+#: functions/theme-help.php:87
+#, php-format
+msgid "Import %s demo content and Starter Sites."
+msgstr ""
+
+#: functions/theme-help.php:92
+#, fuzzy
+#| msgid "Page Content"
+msgid "View Demo Content"
+msgstr "Seiteninhalt"
+
+#: functions/theme-help.php:95
+msgid "Get Starter Sites Plugin"
+msgstr ""
+
+#: functions/theme-help.php:106
+msgid "Upgrade"
+msgstr "Upgrade"
+
+#: functions/theme-help.php:113
+#, fuzzy
+msgid "GO PRO"
+msgstr "GO PRO"
+
+#: functions/theme-help.php:135
+#, php-format
+msgid "%1$s is proudly brought to you by %2$s. If you like this theme, %3$s :)"
+msgstr ""
+"%1$s wird stolz präsentiert von %2$s. Falls Ihnen dieses Theme gefällt, "
+"%3$s :)"
+
+#: functions/theme-help.php:135
+#, fuzzy
+msgid "Retail Review"
+msgstr "Einzelhandelsüberprüfung"
+
+#: functions/theme-help.php:135
+msgid "rate it"
+msgstr "bewerte es"
+
+#. translators: %s: search query.
+#: search.php:35
+#, php-format
+msgid "Search Results for: %s"
+msgstr "Suchergebnisse für: %s"
+
+#: sidebar-shop-filters.php:20
+msgid "Product Filters"
+msgstr "Produktfilter"
+
+#. Theme Name of the plugin/theme
+msgid "Retail"
+msgstr "Retail"
+
+#. Theme URI of the plugin/theme
+msgid "https://uxlthemes.com/theme/retail/"
+msgstr "https://uxlthemes.com/theme/retail/"
+
+#. Description of the plugin/theme
+#, fuzzy
+#| msgid ""
+#| "Retail is a clean and uncluttered WordPress shopping theme. Support for "
+#| "WooCommerce along with Wishlist and Quick View plugins is included along "
+#| "with an auto-updating AJAX header cart, sticky add-to-cart panel on "
+#| "single product pages and a horizontal product filter widget area to help "
+#| "increase the e-commerce sales of your store. The blog also features 12 "
+#| "different grid layout options including masonry post layout and support "
+#| "for video posts/articles. Retail also has full width and boxed layout "
+#| "options."
+msgid ""
+"Retail is a clean and uncluttered WordPress shopping theme. Support for "
+"WooCommerce along with Wishlist and Quick View plugins is included along "
+"with an auto-updating header shopping cart, optional sticky header, sticky "
+"add-to-cart panel on single product pages and a horizontal product filter "
+"widget area to help increase the e-commerce sales of your store. The blog "
+"also features 12 different grid layout options including masonry post layout "
+"and support for video posts/articles. Retail also has full width and boxed "
+"layout options."
+msgstr ""
+"Retail ist ein sauberes und übersichtliches WordPress-Shopping-Thema. "
+"Unterstützung für WooCommerce zusammen mit Wishlist- und Quick View-Plugins "
+"ist ebenso enthalten wie ein automatisch aktualisierter AJAX-Header Cart, "
+"ein klebriges Add-to-Cart-Panel auf einzelnen Produktseiten und ein "
+"horizontaler Produktfilter-Widget-Bereich, um den E-Commerce-Umsatz Ihres "
+"Shops zu steigern. Der Blog bietet auch 12 verschiedene Rasteroptionen, "
+"darunter das Layout der Mauerwerksbeiträge und die Unterstützung für "
+"Videobeiträge/Artikel. Der Einzelhandel hat auch Optionen für die volle "
+"Breite und das Layout von Boxen."
+
+#. Author of the plugin/theme
+msgid "UXL Themes"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "https://uxlthemes.com"
+msgstr "https://uxlthemes.com"
+
+#, fuzzy
+#~ msgid ""
+#~ "Please note: will not import static homepage allocation, if you have "
+#~ "homepage currently set to display blog posts."
+#~ msgstr ""
+#~ "Bitte beachten Sie: wird keine statische Homepagezuordnung importieren, "
+#~ "wenn Sie die Homepage so eingestellt haben, dass sie Blog-Einträge "
+#~ "anzeigt."
+
+#~ msgid "Login"
+#~ msgstr "Anmelden"
+
+#~ msgid "Register"
+#~ msgstr "Registrieren"
