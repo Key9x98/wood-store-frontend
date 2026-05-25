@@ -1,6 +1,7 @@
 <?php
 /**
  * Single product — Furniture Basic.
+ * Thiết kế theo mẫu dogocuongnga.com
  */
 defined( 'ABSPATH' ) || exit;
 get_header();
@@ -13,6 +14,18 @@ while ( have_posts() ) :
   $fb_pct   = fb_sale_percent();
   $fb_terms = get_the_terms( get_the_ID(), 'product_cat' );
   $fb_zalo  = fb_field( 'zalo' );
+  $fb_tags  = get_the_terms( get_the_ID(), 'product_tag' );
+
+  // Meta fields mở rộng
+  $fb_sku       = get_post_meta( get_the_ID(), '_fb_sku', true );
+  $fb_material  = get_post_meta( get_the_ID(), '_fb_material', true );
+  $fb_warranty  = get_post_meta( get_the_ID(), '_fb_warranty', true );
+  $fb_colors    = get_post_meta( get_the_ID(), '_fb_colors', true );
+  $fb_sizes     = get_post_meta( get_the_ID(), '_fb_sizes', true );
+
+  // Lượt xem (tăng mỗi lần load)
+  $fb_views = (int) get_post_meta( get_the_ID(), '_fb_views', true );
+  update_post_meta( get_the_ID(), '_fb_views', $fb_views + 1 );
   ?>
   <div class="container single-product">
     <div class="product-detail">
@@ -159,46 +172,159 @@ while ( have_posts() ) :
         </script>
       <?php endif; ?>
 
+      <!-- ===== PRODUCT SUMMARY ===== -->
       <div class="product-summary">
-        <?php if ( $fb_terms && ! is_wp_error( $fb_terms ) ) : ?>
-          <a class="product-cat-line" href="<?php echo esc_url( get_term_link( $fb_terms[0] ) ); ?>">
-            <?php echo esc_html( $fb_terms[0]->name ); ?>
-          </a>
+
+        <!-- Mã sản phẩm -->
+        <?php if ( $fb_sku ) : ?>
+          <div class="product-sku">
+            <span class="label">Mã sản phẩm:</span>
+            <span class="value"><?php echo esc_html( $fb_sku ); ?></span>
+          </div>
         <?php endif; ?>
 
+        <!-- Tên sản phẩm -->
         <h1><?php the_title(); ?></h1>
 
-        <div class="product-rating">
-          <?php for ( $i = 0; $i < 5; $i++ ) { echo fb_icon( 'star', 17 ); } ?>
-          <span>(Sản phẩm gỗ tự nhiên cao cấp)</span>
-        </div>
-
+        <!-- Giá + badge giảm -->
         <div class="product-price-box">
+          <span class="label">Giá:</span>
           <?php echo wp_kses_post( fb_price_html() ); ?>
           <?php if ( $fb_pct > 0 ) : ?>
-            <span class="save-tag">Tiết kiệm <?php echo esc_html( fb_format_price( $fb_price['regular'] - $fb_price['sale'] ) ); ?></span>
+            <span class="discount-badge">-<?php echo esc_html( $fb_pct ); ?>%</span>
           <?php endif; ?>
         </div>
 
-        <?php if ( has_excerpt() ) : ?>
-          <p class="lead"><?php echo esc_html( get_the_excerpt() ); ?></p>
+        <!-- Lượt xem -->
+        <div class="product-views">
+          <?php echo fb_icon( 'eye', 16 ); ?>
+          <span>Lượt xem: <strong><?php echo number_format( $fb_views + 1, 0, ',', '.' ); ?></strong></span>
+        </div>
+
+        <!-- Mô tả ngắn / Thông số -->
+        <div class="product-specs">
+          <?php if ( has_excerpt() ) : ?>
+            <div class="spec-desc"><?php echo wp_kses_post( wpautop( get_the_excerpt() ) ); ?></div>
+          <?php endif; ?>
+
+          <ul class="spec-list">
+            <?php if ( $fb_material ) : ?>
+              <li><span class="spec-label">Chất liệu:</span> <?php echo esc_html( $fb_material ); ?></li>
+            <?php endif; ?>
+            <?php if ( $fb_warranty ) : ?>
+              <li><span class="spec-label">Bảo hành:</span> <?php echo esc_html( $fb_warranty ); ?></li>
+            <?php endif; ?>
+            <li><span class="spec-label">Tình trạng:</span> Sản phẩm chụp thực tế tại showroom</li>
+            <li><span class="spec-label">Dịch vụ:</span> Chuyên sỉ, lẻ - Nhận đặt hàng theo yêu cầu</li>
+          </ul>
+        </div>
+
+        <!-- Hotline nổi bật -->
+        <div class="product-hotline">
+          <span class="hotline-label">Hotline:</span>
+          <a href="tel:<?php echo esc_attr( fb_tel() ); ?>" class="hotline-number"><?php echo esc_html( fb_field( 'phone' ) ); ?></a>
+        </div>
+
+        <!-- Chi nhánh -->
+        <div class="product-branch">
+          <span class="branch-label">Chi nhánh:</span>
+          <span class="branch-value"><?php echo esc_html( fb_field( 'address' ) ); ?></span>
+        </div>
+
+        <!-- Tags -->
+        <?php if ( $fb_tags && ! is_wp_error( $fb_tags ) ) : ?>
+          <div class="product-tags">
+            <span class="tags-label">Tags:</span>
+            <div class="tags-list">
+              <?php foreach ( $fb_tags as $fb_tag ) : ?>
+                <a href="<?php echo esc_url( get_term_link( $fb_tag ) ); ?>" class="tag-chip"><?php echo esc_html( $fb_tag->name ); ?></a>
+              <?php endforeach; ?>
+            </div>
+          </div>
         <?php endif; ?>
 
-        <div class="product-actions">
-          <a class="btn btn--primary btn--lg" href="tel:<?php echo esc_attr( fb_tel() ); ?>">
-            <?php echo fb_icon( 'phone', 18 ); ?> Gọi đặt hàng
+        <!-- Màu sắc (nếu có) -->
+        <?php
+        $fb_color_arr = $fb_colors ? array_map( 'trim', explode( ',', $fb_colors ) ) : array();
+        if ( ! empty( $fb_color_arr ) ) :
+        ?>
+          <div class="product-variant">
+            <span class="variant-label">Màu sắc: <strong><?php echo esc_html( strtoupper( $fb_color_arr[0] ) ); ?></strong></span>
+            <div class="variant-options" id="fb-color-options">
+              <?php foreach ( $fb_color_arr as $idx => $color ) : ?>
+                <button type="button" class="variant-chip<?php echo 0 === $idx ? ' is-active' : ''; ?>" data-value="<?php echo esc_attr( $color ); ?>">
+                  <?php echo esc_html( $color ); ?>
+                </button>
+              <?php endforeach; ?>
+            </div>
+          </div>
+        <?php endif; ?>
+
+        <!-- Kích thước (nếu có) -->
+        <?php
+        $fb_size_arr = $fb_sizes ? array_map( 'trim', explode( ',', $fb_sizes ) ) : array();
+        if ( ! empty( $fb_size_arr ) ) :
+        ?>
+          <div class="product-variant">
+            <span class="variant-label">Kích thước: <strong><?php echo esc_html( strtoupper( $fb_size_arr[0] ) ); ?></strong></span>
+            <div class="variant-options" id="fb-size-options">
+              <?php foreach ( $fb_size_arr as $idx => $size ) : ?>
+                <button type="button" class="variant-chip<?php echo 0 === $idx ? ' is-active' : ''; ?>" data-value="<?php echo esc_attr( $size ); ?>">
+                  <?php echo esc_html( $size ); ?>
+                </button>
+              <?php endforeach; ?>
+            </div>
+          </div>
+        <?php endif; ?>
+
+        <!-- Số lượng -->
+        <div class="product-quantity">
+          <span class="qty-label">Số lượng:</span>
+          <div class="qty-control">
+            <button type="button" class="qty-btn qty-minus" aria-label="Giảm số lượng">-</button>
+            <input type="number" class="qty-input" value="1" min="1" max="99" readonly>
+            <button type="button" class="qty-btn qty-plus" aria-label="Tăng số lượng">+</button>
+          </div>
+        </div>
+
+        <!-- Nút CTA -->
+        <div class="product-cta">
+          <a class="btn btn--primary btn--lg cta-buy" href="tel:<?php echo esc_attr( fb_tel() ); ?>">
+            <?php echo fb_icon( 'phone', 18 ); ?> Mua Ngay
           </a>
           <?php if ( $fb_zalo ) : ?>
-            <a class="btn btn--gold btn--lg" href="<?php echo esc_url( $fb_zalo ); ?>" target="_blank" rel="noopener">
-              <?php echo fb_icon( 'chat', 18 ); ?> Tư vấn qua Zalo
+            <a class="btn btn--outline btn--lg cta-cart" href="<?php echo esc_url( $fb_zalo ); ?>" target="_blank" rel="noopener">
+              <?php echo fb_icon( 'chat', 18 ); ?> Thêm Vào Giỏ Hàng
             </a>
           <?php else : ?>
-            <a class="btn btn--outline btn--lg" href="mailto:<?php echo esc_attr( fb_field( 'email' ) ); ?>?subject=<?php echo esc_attr( rawurlencode( 'Đặt hàng: ' . get_the_title() ) ); ?>">
-              <?php echo fb_icon( 'mail', 18 ); ?> Gửi yêu cầu
+            <a class="btn btn--outline btn--lg cta-cart" href="mailto:<?php echo esc_attr( fb_field( 'email' ) ); ?>?subject=<?php echo esc_attr( rawurlencode( 'Đặt hàng: ' . get_the_title() ) ); ?>">
+              <?php echo fb_icon( 'mail', 18 ); ?> Thêm Vào Giỏ Hàng
             </a>
           <?php endif; ?>
         </div>
 
+        <!-- Box để lại SĐT -->
+        <div class="product-callback">
+          <div class="callback-icon">
+            <?php echo fb_icon( 'headset', 28 ); ?>
+          </div>
+          <div class="callback-content">
+            <p class="callback-title">Hãy để lại số ĐT</p>
+            <p class="callback-desc">chúng tôi sẽ gọi ngay tư vấn cho bạn <strong>Miễn Phí</strong></p>
+          </div>
+          <form class="callback-form" id="fb-callback-form">
+            <input type="tel" name="phone" placeholder="Nhập số điện thoại của bạn" required>
+            <button type="submit" class="btn btn--primary">GỬI</button>
+          </form>
+        </div>
+
+        <!-- Nút gọi hotline nổi bật -->
+        <a href="tel:<?php echo esc_attr( fb_tel() ); ?>" class="product-call-btn">
+          <?php echo fb_icon( 'phone', 20 ); ?>
+          <span>GỌI NGAY: <?php echo esc_html( fb_field( 'phone' ) ); ?></span>
+        </a>
+
+        <!-- Cam kết -->
         <ul class="product-assure">
           <li><?php echo fb_icon( 'truck', 19 ); ?> <span>Giao hàng &amp; lắp đặt tận nơi</span></li>
           <li><?php echo fb_icon( 'shield', 19 ); ?> <span>Cam kết gỗ tự nhiên, bảo hành dài hạn</span></li>
@@ -206,6 +332,7 @@ while ( have_posts() ) :
           <li><?php echo fb_icon( 'headset', 19 ); ?> <span>Hỗ trợ tư vấn miễn phí: <?php echo esc_html( fb_field( 'phone' ) ); ?></span></li>
         </ul>
 
+        <!-- Danh mục -->
         <?php if ( $fb_terms && ! is_wp_error( $fb_terms ) ) : ?>
           <p class="product-meta">Danh mục:
             <?php
@@ -220,15 +347,42 @@ while ( have_posts() ) :
       </div>
     </div>
 
-    <?php if ( get_the_content() ) : ?>
-      <div class="product-tabs">
-        <h2>Mô tả chi tiết</h2>
-        <div class="product-description"><?php the_content(); ?></div>
+    <!-- ===== TABS: Mô tả + Bình luận ===== -->
+    <div class="product-tabs-wrap">
+      <div class="product-tabs-nav" role="tablist">
+        <button class="tab-btn is-active" role="tab" aria-selected="true" aria-controls="tab-description" id="btn-description">
+          MÔ TẢ SẢN PHẨM
+        </button>
+        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-comments" id="btn-comments">
+          BÌNH LUẬN
+        </button>
       </div>
-    <?php endif; ?>
 
+      <div class="product-tabs-content">
+        <!-- Tab mô tả -->
+        <div class="tab-panel is-active" id="tab-description" role="tabpanel" aria-labelledby="btn-description">
+          <?php if ( get_the_content() ) : ?>
+            <div class="product-description"><?php the_content(); ?></div>
+          <?php else : ?>
+            <p class="no-content">Chưa có mô tả chi tiết cho sản phẩm này.</p>
+          <?php endif; ?>
+        </div>
+
+        <!-- Tab bình luận -->
+        <div class="tab-panel" id="tab-comments" role="tabpanel" aria-labelledby="btn-comments" hidden>
+          <?php
+          if ( comments_open() || get_comments_number() ) {
+            comments_template();
+          } else {
+            echo '<p class="no-content">Chưa có bình luận nào. Hãy là người đầu tiên bình luận!</p>';
+          }
+          ?>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SẢN PHẨM LIÊN QUAN ===== -->
     <?php
-    // ----- Sản phẩm liên quan -----
     $fb_rel_args = array(
       'post_type'           => 'product',
       'posts_per_page'      => 4,
@@ -247,14 +401,14 @@ while ( have_posts() ) :
     $fb_related = new WP_Query( $fb_rel_args );
     if ( $fb_related->have_posts() ) :
       ?>
-      <div class="product-tabs">
-        <h2>Sản phẩm liên quan</h2>
-        <div class="product-grid" style="margin-top:24px;">
+      <section class="related-products">
+        <h2 class="section-title">SẢN PHẨM CÙNG LOẠI</h2>
+        <div class="product-grid">
           <?php while ( $fb_related->have_posts() ) : $fb_related->the_post(); ?>
             <?php get_template_part( 'content', 'product' ); ?>
           <?php endwhile; ?>
         </div>
-      </div>
+      </section>
       <?php
       wp_reset_postdata();
     endif;

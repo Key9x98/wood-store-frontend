@@ -312,6 +312,90 @@
     }
   }
 
+  /* --- Quantity control ---------------------------------------------- */
+  var qtyControl = document.querySelector('.qty-control');
+  if (qtyControl) {
+    var qtyInput = qtyControl.querySelector('.qty-input');
+    var minusBtn = qtyControl.querySelector('.qty-minus');
+    var plusBtn  = qtyControl.querySelector('.qty-plus');
+
+    if (minusBtn) {
+      minusBtn.addEventListener('click', function() {
+        var val = parseInt(qtyInput.value, 10) || 1;
+        if (val > 1) qtyInput.value = val - 1;
+      });
+    }
+    if (plusBtn) {
+      plusBtn.addEventListener('click', function() {
+        var val = parseInt(qtyInput.value, 10) || 1;
+        if (val < 99) qtyInput.value = val + 1;
+      });
+    }
+  }
+
+  /* --- Variant chip selector ----------------------------------------- */
+  document.querySelectorAll('.variant-options').forEach(function(wrap) {
+    wrap.addEventListener('click', function(e) {
+      var chip = e.target.closest('.variant-chip');
+      if (!chip) return;
+      wrap.querySelectorAll('.variant-chip').forEach(function(c) { c.classList.remove('is-active'); });
+      chip.classList.add('is-active');
+
+      // Update label strong
+      var label = wrap.previousElementSibling;
+      if (label && label.classList.contains('variant-label')) {
+        var strong = label.querySelector('strong');
+        if (strong) strong.textContent = chip.getAttribute('data-value').toUpperCase();
+      }
+    });
+  });
+
+  /* --- Product tabs -------------------------------------------------- */
+  var tabsNav = document.querySelector('.product-tabs-nav');
+  var tabsContent = document.querySelector('.product-tabs-content');
+  if (tabsNav && tabsContent) {
+    var tabBtns = tabsNav.querySelectorAll('.tab-btn');
+    var tabPanels = tabsContent.querySelectorAll('.tab-panel');
+
+    tabBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var targetId = btn.getAttribute('aria-controls');
+
+        // Update buttons
+        tabBtns.forEach(function(b) {
+          b.classList.remove('is-active');
+          b.setAttribute('aria-selected', 'false');
+        });
+        btn.classList.add('is-active');
+        btn.setAttribute('aria-selected', 'true');
+
+        // Update panels
+        tabPanels.forEach(function(panel) {
+          if (panel.id === targetId) {
+            panel.classList.add('is-active');
+            panel.hidden = false;
+          } else {
+            panel.classList.remove('is-active');
+            panel.hidden = true;
+          }
+        });
+      });
+    });
+  }
+
+  /* --- Callback form (mock submit) ----------------------------------- */
+  var callbackForm = document.getElementById('fb-callback-form');
+  if (callbackForm) {
+    callbackForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var phoneInput = callbackForm.querySelector('input[name="phone"]');
+      if (phoneInput && phoneInput.value.trim()) {
+        alert('Cảm ơn bạn! Chúng tôi sẽ liên hệ lại trong thời gian sớm nhất.');
+        phoneInput.value = '';
+      }
+    });
+  }
+
   /* --- Reveal khi cuộn ----------------------------------------------- */
   var revealItems = document.querySelectorAll('[data-reveal]');
   if (revealItems.length && 'IntersectionObserver' in window) {

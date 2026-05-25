@@ -118,6 +118,20 @@ add_action( 'init', function () {
     'show_admin_column' => true,
     'rewrite'           => array( 'slug' => 'danh-muc' ),
   ) );
+
+  register_taxonomy( 'product_tag', 'product', array(
+    'label'             => 'Tags sản phẩm',
+    'labels'            => array(
+      'name'          => 'Tags',
+      'singular_name' => 'Tag',
+      'add_new_item'  => 'Thêm tag mới',
+      'search_items'  => 'Tìm tags',
+    ),
+    'hierarchical'      => false,
+    'public'            => true,
+    'show_admin_column' => true,
+    'rewrite'           => array( 'slug' => 'tag-san-pham' ),
+  ) );
 } );
 
 // Flush rewrite rules khi kích hoạt theme để archive /san-pham hoạt động.
@@ -365,6 +379,7 @@ function fb_icon( $name, $size = 24 ) {
     'chat'     => '<path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7A8.4 8.4 0 0 1 4 11.5 8.5 8.5 0 0 1 12.5 3 8.4 8.4 0 0 1 21 11.5z"/>',
     'menu'     => '<path d="M3 6h18M3 12h18M3 18h18"/>',
     'gift'     => '<rect x="3" y="9" width="18" height="12" rx="1.5"/><path d="M3 13h18M12 9v12"/><path d="M12 9S10 3 7 5s5 4 5 4zm0 0s2-6 5-4-5 4-5 4z"/>',
+    'eye'      => '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>',
   );
   $fill = array(
     'star'     => '<path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 18.4 6.1 20.5l1.2-6.5L2.5 9.4l6.6-.9z"/>',
@@ -388,7 +403,64 @@ function fb_icon( $name, $size = 24 ) {
 }
 
 /* =========================================================================
- * 8. Product gallery — meta box (ảnh phụ)
+ * 8. Product extended meta box (SKU, chất liệu, bảo hành, màu, kích thước)
+ * ====================================================================== */
+add_action( 'add_meta_boxes', function () {
+  add_meta_box( 'fb_product_details', 'Thông tin chi tiết', 'fb_render_details_box', 'product', 'normal', 'high' );
+} );
+
+function fb_render_details_box( $post ) {
+  wp_nonce_field( 'fb_save_details', 'fb_details_nonce' );
+  $sku      = get_post_meta( $post->ID, '_fb_sku', true );
+  $material = get_post_meta( $post->ID, '_fb_material', true );
+  $warranty = get_post_meta( $post->ID, '_fb_warranty', true );
+  $colors   = get_post_meta( $post->ID, '_fb_colors', true );
+  $sizes    = get_post_meta( $post->ID, '_fb_sizes', true );
+  ?>
+  <p>
+    <label for="fb_sku"><strong>Mã sản phẩm (SKU)</strong></label><br>
+    <input type="text" id="fb_sku" name="fb_sku" value="<?php echo esc_attr( $sku ); ?>" style="width:100%" placeholder="VD: CB 5-2">
+  </p>
+  <p>
+    <label for="fb_material"><strong>Chất liệu</strong></label><br>
+    <input type="text" id="fb_material" name="fb_material" value="<?php echo esc_attr( $material ); ?>" style="width:100%" placeholder="VD: Gỗ óc chó">
+  </p>
+  <p>
+    <label for="fb_warranty"><strong>Bảo hành</strong></label><br>
+    <input type="text" id="fb_warranty" name="fb_warranty" value="<?php echo esc_attr( $warranty ); ?>" style="width:100%" placeholder="VD: 05 năm">
+  </p>
+  <p>
+    <label for="fb_colors"><strong>Màu sắc</strong></label><br>
+    <input type="text" id="fb_colors" name="fb_colors" value="<?php echo esc_attr( $colors ); ?>" style="width:100%" placeholder="VD: Óc chó, Nâu đậm, Tự nhiên (cách nhau bằng dấu phẩy)">
+    <span style="color:#777;font-size:11px">Nhập các màu cách nhau bằng dấu phẩy.</span>
+  </p>
+  <p>
+    <label for="fb_sizes"><strong>Kích thước</strong></label><br>
+    <input type="text" id="fb_sizes" name="fb_sizes" value="<?php echo esc_attr( $sizes ); ?>" style="width:100%" placeholder="VD: Bộ 4 món, Bộ 6 món, Đơn (cách nhau bằng dấu phẩy)">
+    <span style="color:#777;font-size:11px">Nhập các kích thước cách nhau bằng dấu phẩy.</span>
+  </p>
+  <?php
+}
+
+add_action( 'save_post_product', function ( $post_id ) {
+  if ( ! isset( $_POST['fb_details_nonce'] ) || ! wp_verify_nonce( $_POST['fb_details_nonce'], 'fb_save_details' ) ) {
+    return;
+  }
+  if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+    return;
+  }
+  if ( ! current_user_can( 'edit_post', $post_id ) ) {
+    return;
+  }
+  update_post_meta( $post_id, '_fb_sku', isset( $_POST['fb_sku'] ) ? sanitize_text_field( wp_unslash( $_POST['fb_sku'] ) ) : '' );
+  update_post_meta( $post_id, '_fb_material', isset( $_POST['fb_material'] ) ? sanitize_text_field( wp_unslash( $_POST['fb_material'] ) ) : '' );
+  update_post_meta( $post_id, '_fb_warranty', isset( $_POST['fb_warranty'] ) ? sanitize_text_field( wp_unslash( $_POST['fb_warranty'] ) ) : '' );
+  update_post_meta( $post_id, '_fb_colors', isset( $_POST['fb_colors'] ) ? sanitize_text_field( wp_unslash( $_POST['fb_colors'] ) ) : '' );
+  update_post_meta( $post_id, '_fb_sizes', isset( $_POST['fb_sizes'] ) ? sanitize_text_field( wp_unslash( $_POST['fb_sizes'] ) ) : '' );
+}, 10 );
+
+/* =========================================================================
+ * 9. Product gallery — meta box (ảnh phụ)
  * ====================================================================== */
 add_action( 'add_meta_boxes', function () {
   add_meta_box(
@@ -474,7 +546,7 @@ add_action( 'save_post_product', function ( $post_id ) {
 }, 20 );
 
 /* =========================================================================
- * 9. Excerpt tweaks
+ * 11. Excerpt tweaks
  * ====================================================================== */
 add_filter( 'excerpt_length', function ( $len ) {
   return is_singular( 'product' ) || is_post_type_archive( 'product' ) ? 18 : $len;
