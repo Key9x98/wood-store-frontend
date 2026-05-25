@@ -334,39 +334,13 @@ while ( have_posts() ) :
       </div>
     </div>
 
-    <!-- ===== TABS: Mô tả + Bình luận ===== -->
-    <div class="product-tabs-wrap">
-      <div class="product-tabs-nav" role="tablist">
-        <button class="tab-btn is-active" role="tab" aria-selected="true" aria-controls="tab-description" id="btn-description">
-          MÔ TẢ SẢN PHẨM
-        </button>
-        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-comments" id="btn-comments">
-          BÌNH LUẬN
-        </button>
+    <!-- ===== MÔ TẢ SẢN PHẨM ===== -->
+    <?php if ( get_the_content() ) : ?>
+      <div class="product-description-section">
+        <h2 class="section-title">Mô tả sản phẩm</h2>
+        <div class="product-description"><?php the_content(); ?></div>
       </div>
-
-      <div class="product-tabs-content">
-        <!-- Tab mô tả -->
-        <div class="tab-panel is-active" id="tab-description" role="tabpanel" aria-labelledby="btn-description">
-          <?php if ( get_the_content() ) : ?>
-            <div class="product-description"><?php the_content(); ?></div>
-          <?php else : ?>
-            <p class="no-content">Chưa có mô tả chi tiết cho sản phẩm này.</p>
-          <?php endif; ?>
-        </div>
-
-        <!-- Tab bình luận -->
-        <div class="tab-panel" id="tab-comments" role="tabpanel" aria-labelledby="btn-comments" hidden>
-          <?php
-          if ( comments_open() || get_comments_number() ) {
-            comments_template();
-          } else {
-            echo '<p class="no-content">Chưa có bình luận nào. Hãy là người đầu tiên bình luận!</p>';
-          }
-          ?>
-        </div>
-      </div>
-    </div>
+    <?php endif; ?>
 
     <!-- ===== SẢN PHẨM LIÊN QUAN ===== -->
     <?php
@@ -389,7 +363,7 @@ while ( have_posts() ) :
     if ( $fb_related->have_posts() ) :
       ?>
       <section class="related-products">
-        <h2 class="section-title">SẢN PHẨM CÙNG LOẠI</h2>
+        <h2 class="section-title">Sản phẩm liên quan</h2>
         <div class="product-grid">
           <?php while ( $fb_related->have_posts() ) : $fb_related->the_post(); ?>
             <?php get_template_part( 'content', 'product' ); ?>

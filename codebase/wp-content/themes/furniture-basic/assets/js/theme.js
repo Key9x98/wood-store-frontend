@@ -350,39 +350,6 @@
     });
   });
 
-  /* --- Product tabs -------------------------------------------------- */
-  var tabsNav = document.querySelector('.product-tabs-nav');
-  var tabsContent = document.querySelector('.product-tabs-content');
-  if (tabsNav && tabsContent) {
-    var tabBtns = tabsNav.querySelectorAll('.tab-btn');
-    var tabPanels = tabsContent.querySelectorAll('.tab-panel');
-
-    tabBtns.forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        var targetId = btn.getAttribute('aria-controls');
-
-        // Update buttons
-        tabBtns.forEach(function(b) {
-          b.classList.remove('is-active');
-          b.setAttribute('aria-selected', 'false');
-        });
-        btn.classList.add('is-active');
-        btn.setAttribute('aria-selected', 'true');
-
-        // Update panels
-        tabPanels.forEach(function(panel) {
-          if (panel.id === targetId) {
-            panel.classList.add('is-active');
-            panel.hidden = false;
-          } else {
-            panel.classList.remove('is-active');
-            panel.hidden = true;
-          }
-        });
-      });
-    });
-  }
-
   /* --- Callback form (mock submit) ----------------------------------- */
   var callbackForm = document.getElementById('fb-callback-form');
   if (callbackForm) {
