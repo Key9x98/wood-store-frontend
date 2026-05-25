@@ -8,9 +8,38 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'FB_VERSION', '2.0.0' );
+define( 'FB_VERSION', '2.6.2' );
 define( 'FB_DIR', get_template_directory() );
 define( 'FB_URI', get_template_directory_uri() );
+
+/* =========================================================================
+ * 0. Disable WooCommerce default single product template output
+ * ====================================================================== */
+add_action( 'after_setup_theme', function() {
+  // Khai báo WooCommerce support nhưng không sử dụng template mặc định
+  add_theme_support( 'woocommerce' );
+}, 5 );
+
+// Disable WooCommerce single product hooks khi sử dụng template custom
+add_action( 'wp', function() {
+  if ( is_singular( 'product' ) || ( function_exists( 'is_product' ) && is_product() ) ) {
+    // Remove WooCommerce default content hooks
+    remove_action( 'woocommerce_before_main_content', 'woocommerce_output_content_wrapper', 10 );
+    remove_action( 'woocommerce_after_main_content', 'woocommerce_output_content_wrapper_end', 10 );
+    remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_title', 5 );
+    remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_rating', 10 );
+    remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_price', 10 );
+    remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_excerpt', 20 );
+    remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30 );
+    remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_meta', 40 );
+    remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_sharing', 50 );
+    remove_action( 'woocommerce_before_single_product_summary', 'woocommerce_show_product_images', 20 );
+    remove_action( 'woocommerce_before_single_product_summary', 'woocommerce_show_product_sale_flash', 10 );
+    remove_action( 'woocommerce_after_single_product_summary', 'woocommerce_output_product_data_tabs', 10 );
+    remove_action( 'woocommerce_after_single_product_summary', 'woocommerce_upsell_display', 15 );
+    remove_action( 'woocommerce_after_single_product_summary', 'woocommerce_output_related_products', 20 );
+  }
+}, 99 );
 
 /* =========================================================================
  * 1. Theme setup
@@ -236,13 +265,41 @@ add_shortcode( 'ai_field', function ( $atts ) {
 } );
 
 /* =========================================================================
- * 6. Price helpers
+ * 6. Price helpers — hỗ trợ cả WooCommerce và custom meta
  * ====================================================================== */
 function fb_get_price( $post_id = null ) {
   $post_id = $post_id ? $post_id : get_the_ID();
+  
+  // Ưu tiên lấy giá từ WooCommerce
+  $wc_regular = get_post_meta( $post_id, '_regular_price', true );
+  $wc_sale    = get_post_meta( $post_id, '_sale_price', true );
+  $wc_price   = get_post_meta( $post_id, '_price', true ); // WooCommerce active price
+  
+  // Fallback về custom meta của theme
+  $fb_regular = get_post_meta( $post_id, '_fb_price', true );
+  $fb_sale    = get_post_meta( $post_id, '_fb_sale_price', true );
+  
+  // Xác định giá regular (WooCommerce trước, fallback custom)
+  $regular = 0;
+  if ( $wc_regular !== '' && $wc_regular > 0 ) {
+    $regular = (float) $wc_regular;
+  } elseif ( $wc_price !== '' && $wc_price > 0 ) {
+    $regular = (float) $wc_price;
+  } elseif ( $fb_regular !== '' && $fb_regular > 0 ) {
+    $regular = (float) $fb_regular;
+  }
+  
+  // Xác định giá sale
+  $sale = 0;
+  if ( $wc_sale !== '' && $wc_sale > 0 ) {
+    $sale = (float) $wc_sale;
+  } elseif ( $fb_sale !== '' && $fb_sale > 0 ) {
+    $sale = (float) $fb_sale;
+  }
+  
   return array(
-    'regular' => (float) get_post_meta( $post_id, '_fb_price', true ),
-    'sale'    => (float) get_post_meta( $post_id, '_fb_sale_price', true ),
+    'regular' => $regular,
+    'sale'    => $sale,
   );
 }
 
@@ -296,17 +353,35 @@ function fb_tel( $phone = null ) {
   return preg_replace( '/[^0-9+]/', '', $phone );
 }
 
-/** Menu fallback khi chưa gán menu trong wp-admin. */
+/** Menu fallback khi chưa gán menu trong wp-admin.
+ *
+ * Bỏ các product_cat khỏi top-level — chúng đã có ở `/danh-muc/` + sidebar
+ * shop + chip-bar. Thay vào đó: Giới thiệu (anchor #about ở front-page),
+ * Tin tức (category archive của bài viết). Cả hai resolve dynamic: nếu
+ * có Page với slug `gioi-thieu`/`tin-tuc` thì dùng, không thì fallback.
+ */
 function fb_fallback_menu() {
+  // Resolve "Giới thiệu" URL: WP Page slug `gioi-thieu` nếu tồn tại, ngược lại
+  // anchor về section #about trong front-page.
+  $about_page = get_page_by_path( 'gioi-thieu' );
+  $about_url  = $about_page ? get_permalink( $about_page ) : home_url( '/#about' );
+
+  // "Tin tức" URL: ưu tiên WP Page làm posts archive (page_for_posts → blog page);
+  // nếu chưa cấu hình, fallback Page slug `tin-tuc`; cuối cùng dùng category mặc định.
+  $news_url = '';
+  if ( $posts_page_id = (int) get_option( 'page_for_posts' ) ) {
+    $news_url = get_permalink( $posts_page_id );
+  } elseif ( $news_page = get_page_by_path( 'tin-tuc' ) ) {
+    $news_url = get_permalink( $news_page );
+  } else {
+    $news_url = get_category_link( (int) get_option( 'default_category' ) );
+  }
+
   echo '<ul class="nav-menu">';
   echo '<li><a href="' . esc_url( home_url( '/' ) ) . '">Trang chủ</a></li>';
   echo '<li><a href="' . esc_url( get_post_type_archive_link( 'product' ) ) . '">Sản phẩm</a></li>';
-  $cats = get_terms( array( 'taxonomy' => 'product_cat', 'hide_empty' => true, 'number' => 4 ) );
-  if ( $cats && ! is_wp_error( $cats ) ) {
-    foreach ( $cats as $cat ) {
-      echo '<li><a href="' . esc_url( get_term_link( $cat ) ) . '">' . esc_html( $cat->name ) . '</a></li>';
-    }
-  }
+  echo '<li><a href="' . esc_url( $about_url ) . '">Giới thiệu</a></li>';
+  echo '<li><a href="' . esc_url( $news_url ) . '">Tin tức</a></li>';
   echo '<li><a href="#lien-he">Liên hệ</a></li>';
   echo '</ul>';
 }
@@ -365,6 +440,7 @@ function fb_icon( $name, $size = 24 ) {
     'chat'     => '<path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7A8.4 8.4 0 0 1 4 11.5 8.5 8.5 0 0 1 12.5 3 8.4 8.4 0 0 1 21 11.5z"/>',
     'menu'     => '<path d="M3 6h18M3 12h18M3 18h18"/>',
     'gift'     => '<rect x="3" y="9" width="18" height="12" rx="1.5"/><path d="M3 13h18M12 9v12"/><path d="M12 9S10 3 7 5s5 4 5 4zm0 0s2-6 5-4-5 4-5 4z"/>',
+    'eye'      => '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>',
   );
   $fill = array(
     'star'     => '<path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 18.4 6.1 20.5l1.2-6.5L2.5 9.4l6.6-.9z"/>',
@@ -388,7 +464,150 @@ function fb_icon( $name, $size = 24 ) {
 }
 
 /* =========================================================================
- * 8. Excerpt tweaks
+ * 8. Product extended meta box (SKU, chất liệu, bảo hành, màu, kích thước)
+ * ====================================================================== */
+add_action( 'add_meta_boxes', function () {
+  add_meta_box( 'fb_product_details', 'Thông tin chi tiết', 'fb_render_details_box', 'product', 'normal', 'high' );
+} );
+
+function fb_render_details_box( $post ) {
+  wp_nonce_field( 'fb_save_details', 'fb_details_nonce' );
+  $sku      = get_post_meta( $post->ID, '_fb_sku', true );
+  $material = get_post_meta( $post->ID, '_fb_material', true );
+  $warranty = get_post_meta( $post->ID, '_fb_warranty', true );
+  $colors   = get_post_meta( $post->ID, '_fb_colors', true );
+  $sizes    = get_post_meta( $post->ID, '_fb_sizes', true );
+  ?>
+  <p>
+    <label for="fb_sku"><strong>Mã sản phẩm (SKU)</strong></label><br>
+    <input type="text" id="fb_sku" name="fb_sku" value="<?php echo esc_attr( $sku ); ?>" style="width:100%" placeholder="VD: CB 5-2">
+  </p>
+  <p>
+    <label for="fb_material"><strong>Chất liệu</strong></label><br>
+    <input type="text" id="fb_material" name="fb_material" value="<?php echo esc_attr( $material ); ?>" style="width:100%" placeholder="VD: Gỗ óc chó">
+  </p>
+  <p>
+    <label for="fb_warranty"><strong>Bảo hành</strong></label><br>
+    <input type="text" id="fb_warranty" name="fb_warranty" value="<?php echo esc_attr( $warranty ); ?>" style="width:100%" placeholder="VD: 05 năm">
+  </p>
+  <p>
+    <label for="fb_colors"><strong>Màu sắc</strong></label><br>
+    <input type="text" id="fb_colors" name="fb_colors" value="<?php echo esc_attr( $colors ); ?>" style="width:100%" placeholder="VD: Óc chó, Nâu đậm, Tự nhiên (cách nhau bằng dấu phẩy)">
+    <span style="color:#777;font-size:11px">Nhập các màu cách nhau bằng dấu phẩy.</span>
+  </p>
+  <p>
+    <label for="fb_sizes"><strong>Kích thước</strong></label><br>
+    <input type="text" id="fb_sizes" name="fb_sizes" value="<?php echo esc_attr( $sizes ); ?>" style="width:100%" placeholder="VD: Bộ 4 món, Bộ 6 món, Đơn (cách nhau bằng dấu phẩy)">
+    <span style="color:#777;font-size:11px">Nhập các kích thước cách nhau bằng dấu phẩy.</span>
+  </p>
+  <?php
+}
+
+add_action( 'save_post_product', function ( $post_id ) {
+  if ( ! isset( $_POST['fb_details_nonce'] ) || ! wp_verify_nonce( $_POST['fb_details_nonce'], 'fb_save_details' ) ) {
+    return;
+  }
+  if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+    return;
+  }
+  if ( ! current_user_can( 'edit_post', $post_id ) ) {
+    return;
+  }
+  update_post_meta( $post_id, '_fb_sku', isset( $_POST['fb_sku'] ) ? sanitize_text_field( wp_unslash( $_POST['fb_sku'] ) ) : '' );
+  update_post_meta( $post_id, '_fb_material', isset( $_POST['fb_material'] ) ? sanitize_text_field( wp_unslash( $_POST['fb_material'] ) ) : '' );
+  update_post_meta( $post_id, '_fb_warranty', isset( $_POST['fb_warranty'] ) ? sanitize_text_field( wp_unslash( $_POST['fb_warranty'] ) ) : '' );
+  update_post_meta( $post_id, '_fb_colors', isset( $_POST['fb_colors'] ) ? sanitize_text_field( wp_unslash( $_POST['fb_colors'] ) ) : '' );
+  update_post_meta( $post_id, '_fb_sizes', isset( $_POST['fb_sizes'] ) ? sanitize_text_field( wp_unslash( $_POST['fb_sizes'] ) ) : '' );
+}, 10 );
+
+/* =========================================================================
+ * 9. Product gallery — meta box (ảnh phụ)
+ * ====================================================================== */
+add_action( 'add_meta_boxes', function () {
+  add_meta_box(
+    'fb_product_gallery',
+    'Thư viện ảnh sản phẩm',
+    'fb_render_gallery_box',
+    'product',
+    'normal',
+    'high'
+  );
+} );
+
+function fb_render_gallery_box( $post ) {
+  wp_nonce_field( 'fb_save_gallery', 'fb_gallery_nonce' );
+  $gallery_ids = get_post_meta( $post->ID, '_fb_gallery', true );
+  $ids_str     = is_array( $gallery_ids ) ? implode( ',', array_map( 'intval', $gallery_ids ) ) : '';
+  ?>
+  <div id="fb-gallery-wrap" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+    <?php
+    if ( is_array( $gallery_ids ) ) {
+      foreach ( $gallery_ids as $att_id ) {
+        $thumb = wp_get_attachment_image_url( (int) $att_id, 'thumbnail' );
+        if ( $thumb ) {
+          echo '<div class="fb-gal-item" style="position:relative;width:90px;height:90px;border-radius:8px;overflow:hidden;border:2px solid #e8dec9;">
+            <img src="' . esc_url( $thumb ) . '" style="width:100%;height:100%;object-fit:cover;">
+            <button type="button" data-id="' . esc_attr( $att_id ) . '" onclick="fbGalRemove(this)" style="position:absolute;top:3px;right:3px;background:rgba(0,0,0,.65);color:#fff;border:0;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:13px;line-height:1;padding:0;">×</button>
+          </div>';
+        }
+      }
+    }
+    ?>
+  </div>
+  <input type="hidden" name="fb_gallery_ids" id="fb_gallery_ids" value="<?php echo esc_attr( $ids_str ); ?>">
+  <button type="button" id="fb-gallery-btn" class="button"><?php esc_html_e( '+ Thêm ảnh', 'furniture-basic' ); ?></button>
+  <p class="description" style="margin-top:6px;">Chọn nhiều ảnh phụ hiển thị dưới ảnh chính trên trang sản phẩm.</p>
+  <script>
+  (function(){
+    var frame, wrap = document.getElementById('fb-gallery-wrap'), input = document.getElementById('fb_gallery_ids');
+    document.getElementById('fb-gallery-btn').onclick = function(){
+      if(frame){frame.open();return;}
+      frame = wp.media({title:'Chọn ảnh thư viện',button:{text:'Thêm vào thư viện'},multiple:true});
+      frame.on('select',function(){
+        var sel = frame.state().get('selection');
+        var ids = input.value ? input.value.split(',').filter(Boolean) : [];
+        sel.each(function(a){
+          if(ids.indexOf(String(a.id))<0){
+            ids.push(a.id);
+            var d=document.createElement('div');
+            d.className='fb-gal-item';
+            d.style='position:relative;width:90px;height:90px;border-radius:8px;overflow:hidden;border:2px solid #e8dec9;';
+            d.innerHTML='<img src="'+a.attributes.sizes.thumbnail.url+'" style="width:100%;height:100%;object-fit:cover;"><button type="button" data-id="'+a.id+'" onclick="fbGalRemove(this)" style="position:absolute;top:3px;right:3px;background:rgba(0,0,0,.65);color:#fff;border:0;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:13px;line-height:1;padding:0;">×</button>';
+            wrap.appendChild(d);
+          }
+        });
+        input.value = ids.join(',');
+      });
+      frame.open();
+    };
+  })();
+  function fbGalRemove(btn){
+    var id = String(btn.getAttribute('data-id'));
+    btn.closest('.fb-gal-item').remove();
+    var input = document.getElementById('fb_gallery_ids');
+    input.value = input.value.split(',').filter(function(v){return v && v!==id;}).join(',');
+  }
+  </script>
+  <?php
+}
+
+add_action( 'save_post_product', function ( $post_id ) {
+  if ( ! isset( $_POST['fb_gallery_nonce'] ) || ! wp_verify_nonce( $_POST['fb_gallery_nonce'], 'fb_save_gallery' ) ) {
+    return;
+  }
+  if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+    return;
+  }
+  if ( ! current_user_can( 'edit_post', $post_id ) ) {
+    return;
+  }
+  $raw = isset( $_POST['fb_gallery_ids'] ) ? sanitize_text_field( wp_unslash( $_POST['fb_gallery_ids'] ) ) : '';
+  $ids = array_filter( array_map( 'intval', explode( ',', $raw ) ) );
+  update_post_meta( $post_id, '_fb_gallery', array_values( $ids ) );
+}, 20 );
+
+/* =========================================================================
+ * 11. Excerpt tweaks
  * ====================================================================== */
 add_filter( 'excerpt_length', function ( $len ) {
   return is_singular( 'product' ) || is_post_type_archive( 'product' ) ? 18 : $len;
@@ -396,3 +615,87 @@ add_filter( 'excerpt_length', function ( $len ) {
 add_filter( 'excerpt_more', function () {
   return '…';
 } );
+
+/**
+ * Trích URL ảnh đầu tiên trong post_content. Dùng làm fallback thumbnail
+ * khi post không set featured image — phổ biến cho các post import từ
+ * nguồn khác hoặc WP Hello-world mặc định.
+ */
+function fb_first_content_image( $post ) {
+  if ( ! $post instanceof WP_Post ) {
+    return '';
+  }
+  if ( preg_match( '/<img[^>]+src=["\']([^"\']+)["\']/i', (string) $post->post_content, $m ) ) {
+    return (string) $m[1];
+  }
+  return '';
+}
+
+/**
+ * Trả về attachment ID dùng làm thumbnail cho 1 product_cat.
+ *
+ * Ưu tiên `thumbnail_id` term meta (WC admin → Categories → upload). Nếu term
+ * chưa có ảnh, fallback sang featured image của sản phẩm đầu tiên trong term.
+ * Cache mỗi term 1 lần per request bằng static để tránh query trùng.
+ *
+ * @return int Attachment ID hoặc 0 nếu không tìm được.
+ */
+function fb_cat_thumb_id( $term ) {
+  static $cache = array();
+  if ( ! $term instanceof WP_Term ) {
+    return 0;
+  }
+  if ( isset( $cache[ $term->term_id ] ) ) {
+    return $cache[ $term->term_id ];
+  }
+  $id = (int) get_term_meta( $term->term_id, 'thumbnail_id', true );
+  if ( ! $id ) {
+    // Fallback: sản phẩm đầu tiên có featured image thuộc term này.
+    $q = new WP_Query( array(
+      'post_type'      => 'product',
+      'posts_per_page' => 1,
+      'post_status'    => 'publish',
+      'fields'         => 'ids',
+      'meta_query'     => array( array( 'key' => '_thumbnail_id', 'compare' => 'EXISTS' ) ),
+      'tax_query'      => array( array(
+        'taxonomy' => 'product_cat',
+        'field'    => 'term_id',
+        'terms'    => $term->term_id,
+      ) ),
+      'no_found_rows'  => true,
+    ) );
+    if ( ! empty( $q->posts ) ) {
+      $id = (int) get_post_thumbnail_id( $q->posts[0] );
+    }
+    wp_reset_postdata();
+  }
+  $cache[ $term->term_id ] = $id;
+  return $id;
+}
+
+/* =========================================================================
+ * Custom route: /danh-muc/  → trang index tất cả danh mục
+ * --------------------------------------------------------------------------
+ * WooCommerce dùng "danh-muc" làm rewrite prefix cho taxonomy product_cat,
+ * nên `/danh-muc/<slug>/` map sang archive của term — còn `/danh-muc/` raw
+ * (không kèm slug) thì 404 vì không có gốc nào ngụ ở đó. Hook này bắt 404
+ * tại URI đúng và load template `page-categories.php` thay thế.
+ *
+ * Đặt sau khi WP đã resolve query nên không xung đột với rewrite của WC.
+ * ====================================================================== */
+add_action( 'template_redirect', function () {
+  if ( ! is_404() ) {
+    return;
+  }
+  $uri = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '';
+  // Strip query string + leading slash + trailing slash, normalise to "danh-muc".
+  $path = strtok( $uri, '?' );
+  $path = trim( (string) $path, '/' );
+  // Cho phép cả /danh-muc/ và /index.php/danh-muc/ vì site này dùng PATHINFO permalink.
+  if ( $path === 'danh-muc' || $path === 'index.php/danh-muc' ) {
+    status_header( 200 );
+    // template_include không chạy nữa ở stage này — include trực tiếp.
+    include FB_DIR . '/page-categories.php';
+    exit;
+  }
+}, 1 );

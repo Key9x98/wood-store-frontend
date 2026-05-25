@@ -14,7 +14,14 @@ final class MediaImporter
         'image/gif',
         'image/webp',
         'image/svg+xml',
+        // Video MIME types accepted for product gallery sideloading. WordPress
+        // detects the actual MIME from the downloaded file (`wp_check_filetype_and_ext`)
+        // so a `.mp4` URL whose body is HTML won't slip through.
         'video/mp4',
+        'video/webm',
+        'video/quicktime', // .mov
+        'video/x-m4v',
+        'video/ogg',
         'application/pdf',
     ];
 

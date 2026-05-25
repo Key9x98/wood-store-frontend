@@ -45,6 +45,20 @@ final class ContentController
             return $self->err('products.invalid_input', 'slug and name required', 400);
         }
 
+        // Normalise YouTube ids (11 chars exactly) and fold into the meta payload
+        // as `_fb_youtube_ids` (CSV). Always set the key — even to empty string —
+        // so removing every YouTube link from a product clears stale ids in WP.
+        $rawYt = (array) ($params['youtube_ids'] ?? []);
+        $ytIds = [];
+        foreach ($rawYt as $id) {
+            $id = is_string($id) ? trim($id) : '';
+            if ($id !== '' && preg_match('/^[A-Za-z0-9_-]{11}$/', $id)) {
+                $ytIds[] = $id;
+            }
+        }
+        $meta = is_array($params['meta'] ?? null) ? $params['meta'] : [];
+        $meta['_fb_youtube_ids'] = implode(',', $ytIds);
+
         $product = (new ContentSync())->upsertProduct([
             'slug' => $slug,
             'name' => $name,
@@ -55,8 +69,14 @@ final class ContentController
             'sale_price' => isset($params['sale_price']) ? (string) $params['sale_price'] : '',
             'featured_image_id' => isset($params['featured_image_id']) ? (int) $params['featured_image_id'] : 0,
             'gallery_ids' => array_map('intval', (array) ($params['gallery_ids'] ?? [])),
-            'category_slugs' => array_map('sanitize_title', (array) ($params['category_slugs'] ?? [])),
-            'meta' => is_array($params['meta'] ?? null) ? $params['meta'] : [],
+            // KHÔNG slugify ở đây — giữ nguyên ký tự Unicode để theme + WC
+            // hiển thị tên danh mục tiếng Việt đúng (vd "Tủ thờ"). Slug được
+            // wp_insert_term auto-derive từ tên khi term mới được tạo.
+            'category_slugs' => array_filter(array_map(
+                static fn($v) => sanitize_text_field((string) $v),
+                (array) ($params['category_slugs'] ?? [])
+            )),
+            'meta' => $meta,
         ]);
 
         $resp = $self->ok($product);

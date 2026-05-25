@@ -71,7 +71,14 @@ $shop_url    = get_post_type_archive_link( 'product' );
 
 <!-- ========================= CATEGORIES ========================= -->
 <?php
-$cats = get_terms( array( 'taxonomy' => 'product_cat', 'hide_empty' => false, 'number' => 8 ) );
+$cats = get_terms( array(
+  'taxonomy'   => 'product_cat',
+  'hide_empty' => true,
+  'number'     => 8,
+  'orderby'    => 'count',
+  'order'      => 'DESC',
+  'exclude'    => array( (int) get_option( 'default_product_cat' ) ), // "Uncategorized"
+) );
 if ( $cats && ! is_wp_error( $cats ) ) : ?>
 <section class="section">
   <div class="container">
@@ -82,7 +89,7 @@ if ( $cats && ! is_wp_error( $cats ) ) : ?>
     </div>
     <div class="cat-grid">
       <?php foreach ( $cats as $cat ) :
-        $thumb_id = (int) get_term_meta( $cat->term_id, 'thumbnail_id', true ); ?>
+        $thumb_id = fb_cat_thumb_id( $cat ); ?>
         <a class="cat-card" href="<?php echo esc_url( get_term_link( $cat ) ); ?>">
           <?php
           if ( $thumb_id ) {
@@ -140,7 +147,7 @@ if ( $cats && ! is_wp_error( $cats ) ) : ?>
 </section>
 
 <!-- =========================== ABOUT ============================ -->
-<section class="section">
+<section id="about" class="section">
   <div class="container about__row">
     <div class="about__media">
       <?php if ( $about_image ) : ?>

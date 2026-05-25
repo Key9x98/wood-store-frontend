@@ -90,8 +90,46 @@ final class ContentSync
         if (!empty($args['gallery_ids'])) {
             update_post_meta($id, '_product_image_gallery', implode(',', array_map('intval', (array) $args['gallery_ids'])));
         }
+
+        // WooCommerce catalog visibility + stock — bắt buộc set để
+        // `_wc_term_recount()` (term count callback của product_cat) đếm
+        // product này. Thiếu các meta dưới → sản phẩm vẫn publish, nhưng
+        // term count báo 0 vì WC coi như "không bán được".
+        if (get_post_meta($id, '_visibility', true) === '') {
+            update_post_meta($id, '_visibility', 'visible');
+        }
+        if (get_post_meta($id, '_stock_status', true) === '') {
+            update_post_meta($id, '_stock_status', 'instock');
+        }
+        if (get_post_meta($id, '_manage_stock', true) === '') {
+            update_post_meta($id, '_manage_stock', 'no');
+        }
+        if (get_post_meta($id, '_backorders', true) === '') {
+            update_post_meta($id, '_backorders', 'no');
+        }
+
         if (!empty($args['category_slugs'])) {
+            // Truyền raw string (đã được sanitize_text_field upstream). Với
+            // taxonomy hierarchical như product_cat, wp_set_object_terms gọi
+            // term_exists($value, 'product_cat') — match cả slug lẫn name. Nếu
+            // không match, wp_insert_term($value, 'product_cat') tạo term mới
+            // với name = $value, slug = sanitize_title($value) tự động.
+            // Nhờ vậy user gửi "Tủ thờ" sẽ tạo term tên "Tủ thờ" slug "tu-tho".
             wp_set_object_terms($id, (array) $args['category_slugs'], 'product_cat', false);
+
+            // Force WC term recount: wp_set_object_terms gọi callback của
+            // taxonomy (đối với product_cat là `_wc_term_recount`), nhưng cache
+            // count của WC có thể stale. Gọi explicit để đảm bảo count chính
+            // xác ngay sau sync — quan trọng để trang /danh-muc/ hiển thị đúng.
+            $term_tt_ids = wp_get_post_terms($id, 'product_cat', ['fields' => 'tt_ids']);
+            if (!is_wp_error($term_tt_ids) && !empty($term_tt_ids)) {
+                $tax = get_taxonomy('product_cat');
+                if ($tax && is_callable($tax->update_count_callback)) {
+                    call_user_func($tax->update_count_callback, $term_tt_ids, $tax);
+                } else {
+                    wp_update_term_count_now($term_tt_ids, 'product_cat');
+                }
+            }
         }
         foreach ((array) ($args['meta'] ?? []) as $k => $v) {
             if (is_string($k)) {

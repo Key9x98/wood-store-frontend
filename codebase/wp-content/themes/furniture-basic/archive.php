@@ -9,22 +9,62 @@ get_header();
 $fb_is_shop = is_post_type_archive( 'product' ) || is_tax( 'product_cat' );
 
 if ( $fb_is_shop ) :
-  fb_breadcrumb();
 
-  if ( is_tax( 'product_cat' ) ) {
-    $fb_title = single_term_title( '', false );
-    $fb_desc  = term_description();
+  $fb_is_tax = is_tax( 'product_cat' );
+  if ( $fb_is_tax ) {
+    $fb_title    = single_term_title( '', false );
+    $fb_desc     = term_description();
+    $fb_eyebrow  = 'Danh mục';
+    $fb_cur_term = get_queried_object();
+    $fb_count    = isset( $fb_cur_term->count ) ? (int) $fb_cur_term->count : 0;
   } else {
-    $fb_title = 'Tất cả sản phẩm';
-    $fb_desc  = '';
+    $fb_title    = 'Tất cả sản phẩm';
+    $fb_desc     = '';
+    $fb_eyebrow  = 'Cửa hàng';
+    $fb_count    = (int) ( $GLOBALS['wp_query']->found_posts ?? 0 );
   }
   ?>
-  <div class="page-head">
+  <!-- ===== HERO ===== -->
+  <section class="page-hero page-hero--shop">
     <div class="container">
+      <nav class="breadcrumb breadcrumb--on-hero" aria-label="Đường dẫn">
+        <a href="<?php echo esc_url( home_url( '/' ) ); ?>">Trang chủ</a>
+        <span class="breadcrumb__sep">›</span>
+        <?php if ( $fb_is_tax ) : ?>
+          <a href="<?php echo esc_url( home_url( '/danh-muc/' ) ); ?>">Danh mục</a>
+          <span class="breadcrumb__sep">›</span>
+        <?php endif; ?>
+        <span><?php echo esc_html( $fb_title ); ?></span>
+      </nav>
+      <span class="eyebrow"><?php echo esc_html( $fb_eyebrow ); ?></span>
       <h1><?php echo esc_html( $fb_title ); ?></h1>
       <p><?php echo $fb_desc ? wp_kses_post( $fb_desc ) : 'Đồ gỗ tự nhiên — bền đẹp, giá tận xưởng, giao lắp tận nơi.'; ?></p>
+      <?php if ( $fb_count > 0 ) : ?>
+        <p class="page-hero__meta"><?php printf( esc_html( '%d sản phẩm' ), $fb_count ); ?></p>
+      <?php endif; ?>
     </div>
-  </div>
+  </section>
+
+  <!-- ===== QUICK CHIP FILTER (mobile khi sidebar ẩn) ===== -->
+  <?php
+  $fb_chip_terms = get_terms( array( 'taxonomy' => 'product_cat', 'hide_empty' => true ) );
+  if ( $fb_chip_terms && ! is_wp_error( $fb_chip_terms ) ) :
+    $fb_cur_id = $fb_is_tax ? get_queried_object_id() : 0;
+    ?>
+    <div class="cat-chip-bar" aria-label="Lọc nhanh theo danh mục">
+      <div class="container">
+        <div class="cat-chip-bar__scroll">
+          <a class="cat-chip<?php echo ! $fb_is_tax ? ' is-active' : ''; ?>" href="<?php echo esc_url( get_post_type_archive_link( 'product' ) ); ?>">Tất cả</a>
+          <?php foreach ( $fb_chip_terms as $fb_chip ) : ?>
+            <a class="cat-chip<?php echo $fb_chip->term_id === $fb_cur_id ? ' is-active' : ''; ?>" href="<?php echo esc_url( get_term_link( $fb_chip ) ); ?>">
+              <?php echo esc_html( $fb_chip->name ); ?>
+              <span class="cat-chip__count"><?php echo (int) $fb_chip->count; ?></span>
+            </a>
+          <?php endforeach; ?>
+        </div>
+      </div>
+    </div>
+  <?php endif; ?>
 
   <div class="container shop">
     <aside class="shop-sidebar">
@@ -95,11 +135,14 @@ if ( $fb_is_shop ) :
         ) );
         ?>
       <?php else : ?>
-        <div class="empty-state">
-          <?php echo fb_icon( 'sofa', 44 ); ?>
+        <div class="empty-state empty-state--lg">
+          <?php echo fb_icon( 'sofa', 64 ); ?>
           <h3>Chưa có sản phẩm</h3>
-          <p>Danh mục này chưa có sản phẩm nào. Vui lòng quay lại sau.</p>
-          <p><a class="btn btn--primary btn--sm" href="<?php echo esc_url( get_post_type_archive_link( 'product' ) ); ?>">Xem tất cả sản phẩm</a></p>
+          <p>Danh mục này hiện chưa có sản phẩm nào.<br>Mời bạn xem các bộ sưu tập khác hoặc liên hệ để được tư vấn riêng.</p>
+          <div class="empty-state__cta">
+            <a class="btn btn--primary btn--sm" href="<?php echo esc_url( get_post_type_archive_link( 'product' ) ); ?>">Xem tất cả sản phẩm</a>
+            <a class="btn btn--outline btn--sm" href="<?php echo esc_url( home_url( '/danh-muc/' ) ); ?>">Khám phá danh mục</a>
+          </div>
         </div>
       <?php endif; ?>
     </main>
@@ -107,13 +150,17 @@ if ( $fb_is_shop ) :
 
 <?php else : // ----- Archive thường (blog, tag, ngày tháng…) ----- ?>
 
-  <?php fb_breadcrumb(); ?>
-  <div class="page-head">
+  <section class="page-hero">
     <div class="container">
+      <nav class="breadcrumb breadcrumb--on-hero" aria-label="Đường dẫn">
+        <a href="<?php echo esc_url( home_url( '/' ) ); ?>">Trang chủ</a>
+        <span class="breadcrumb__sep">›</span>
+        <span><?php echo esc_html( wp_strip_all_tags( get_the_archive_title() ) ); ?></span>
+      </nav>
       <h1><?php echo esc_html( wp_strip_all_tags( get_the_archive_title() ) ); ?></h1>
       <?php the_archive_description( '<p>', '</p>' ); ?>
     </div>
-  </div>
+  </section>
 
   <div class="container" style="padding-top:48px;padding-bottom:48px;">
     <?php if ( have_posts() ) : ?>
