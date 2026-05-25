@@ -388,7 +388,93 @@ function fb_icon( $name, $size = 24 ) {
 }
 
 /* =========================================================================
- * 8. Excerpt tweaks
+ * 8. Product gallery — meta box (ảnh phụ)
+ * ====================================================================== */
+add_action( 'add_meta_boxes', function () {
+  add_meta_box(
+    'fb_product_gallery',
+    'Thư viện ảnh sản phẩm',
+    'fb_render_gallery_box',
+    'product',
+    'normal',
+    'high'
+  );
+} );
+
+function fb_render_gallery_box( $post ) {
+  wp_nonce_field( 'fb_save_gallery', 'fb_gallery_nonce' );
+  $gallery_ids = get_post_meta( $post->ID, '_fb_gallery', true );
+  $ids_str     = is_array( $gallery_ids ) ? implode( ',', array_map( 'intval', $gallery_ids ) ) : '';
+  ?>
+  <div id="fb-gallery-wrap" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+    <?php
+    if ( is_array( $gallery_ids ) ) {
+      foreach ( $gallery_ids as $att_id ) {
+        $thumb = wp_get_attachment_image_url( (int) $att_id, 'thumbnail' );
+        if ( $thumb ) {
+          echo '<div class="fb-gal-item" style="position:relative;width:90px;height:90px;border-radius:8px;overflow:hidden;border:2px solid #e8dec9;">
+            <img src="' . esc_url( $thumb ) . '" style="width:100%;height:100%;object-fit:cover;">
+            <button type="button" data-id="' . esc_attr( $att_id ) . '" onclick="fbGalRemove(this)" style="position:absolute;top:3px;right:3px;background:rgba(0,0,0,.65);color:#fff;border:0;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:13px;line-height:1;padding:0;">×</button>
+          </div>';
+        }
+      }
+    }
+    ?>
+  </div>
+  <input type="hidden" name="fb_gallery_ids" id="fb_gallery_ids" value="<?php echo esc_attr( $ids_str ); ?>">
+  <button type="button" id="fb-gallery-btn" class="button"><?php esc_html_e( '+ Thêm ảnh', 'furniture-basic' ); ?></button>
+  <p class="description" style="margin-top:6px;">Chọn nhiều ảnh phụ hiển thị dưới ảnh chính trên trang sản phẩm.</p>
+  <script>
+  (function(){
+    var frame, wrap = document.getElementById('fb-gallery-wrap'), input = document.getElementById('fb_gallery_ids');
+    document.getElementById('fb-gallery-btn').onclick = function(){
+      if(frame){frame.open();return;}
+      frame = wp.media({title:'Chọn ảnh thư viện',button:{text:'Thêm vào thư viện'},multiple:true});
+      frame.on('select',function(){
+        var sel = frame.state().get('selection');
+        var ids = input.value ? input.value.split(',').filter(Boolean) : [];
+        sel.each(function(a){
+          if(ids.indexOf(String(a.id))<0){
+            ids.push(a.id);
+            var d=document.createElement('div');
+            d.className='fb-gal-item';
+            d.style='position:relative;width:90px;height:90px;border-radius:8px;overflow:hidden;border:2px solid #e8dec9;';
+            d.innerHTML='<img src="'+a.attributes.sizes.thumbnail.url+'" style="width:100%;height:100%;object-fit:cover;"><button type="button" data-id="'+a.id+'" onclick="fbGalRemove(this)" style="position:absolute;top:3px;right:3px;background:rgba(0,0,0,.65);color:#fff;border:0;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:13px;line-height:1;padding:0;">×</button>';
+            wrap.appendChild(d);
+          }
+        });
+        input.value = ids.join(',');
+      });
+      frame.open();
+    };
+  })();
+  function fbGalRemove(btn){
+    var id = String(btn.getAttribute('data-id'));
+    btn.closest('.fb-gal-item').remove();
+    var input = document.getElementById('fb_gallery_ids');
+    input.value = input.value.split(',').filter(function(v){return v && v!==id;}).join(',');
+  }
+  </script>
+  <?php
+}
+
+add_action( 'save_post_product', function ( $post_id ) {
+  if ( ! isset( $_POST['fb_gallery_nonce'] ) || ! wp_verify_nonce( $_POST['fb_gallery_nonce'], 'fb_save_gallery' ) ) {
+    return;
+  }
+  if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+    return;
+  }
+  if ( ! current_user_can( 'edit_post', $post_id ) ) {
+    return;
+  }
+  $raw = isset( $_POST['fb_gallery_ids'] ) ? sanitize_text_field( wp_unslash( $_POST['fb_gallery_ids'] ) ) : '';
+  $ids = array_filter( array_map( 'intval', explode( ',', $raw ) ) );
+  update_post_meta( $post_id, '_fb_gallery', array_values( $ids ) );
+}, 20 );
+
+/* =========================================================================
+ * 9. Excerpt tweaks
  * ====================================================================== */
 add_filter( 'excerpt_length', function ( $len ) {
   return is_singular( 'product' ) || is_post_type_archive( 'product' ) ? 18 : $len;
