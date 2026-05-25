@@ -14,7 +14,6 @@ while ( have_posts() ) :
   $fb_pct   = fb_sale_percent();
   $fb_terms = get_the_terms( get_the_ID(), 'product_cat' );
   $fb_zalo  = fb_field( 'zalo' );
-  $fb_tags  = get_the_terms( get_the_ID(), 'product_tag' );
 
   // Meta fields mở rộng
   $fb_sku       = get_post_meta( get_the_ID(), '_fb_sku', true );
@@ -230,18 +229,6 @@ while ( have_posts() ) :
           <span class="branch-label">Chi nhánh:</span>
           <span class="branch-value"><?php echo esc_html( fb_field( 'address' ) ); ?></span>
         </div>
-
-        <!-- Tags -->
-        <?php if ( $fb_tags && ! is_wp_error( $fb_tags ) ) : ?>
-          <div class="product-tags">
-            <span class="tags-label">Tags:</span>
-            <div class="tags-list">
-              <?php foreach ( $fb_tags as $fb_tag ) : ?>
-                <a href="<?php echo esc_url( get_term_link( $fb_tag ) ); ?>" class="tag-chip"><?php echo esc_html( $fb_tag->name ); ?></a>
-              <?php endforeach; ?>
-            </div>
-          </div>
-        <?php endif; ?>
 
         <!-- Màu sắc (nếu có) -->
         <?php

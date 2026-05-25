@@ -118,20 +118,6 @@ add_action( 'init', function () {
     'show_admin_column' => true,
     'rewrite'           => array( 'slug' => 'danh-muc' ),
   ) );
-
-  register_taxonomy( 'product_tag', 'product', array(
-    'label'             => 'Tags sản phẩm',
-    'labels'            => array(
-      'name'          => 'Tags',
-      'singular_name' => 'Tag',
-      'add_new_item'  => 'Thêm tag mới',
-      'search_items'  => 'Tìm tags',
-    ),
-    'hierarchical'      => false,
-    'public'            => true,
-    'show_admin_column' => true,
-    'rewrite'           => array( 'slug' => 'tag-san-pham' ),
-  ) );
 } );
 
 // Flush rewrite rules khi kích hoạt theme để archive /san-pham hoạt động.
