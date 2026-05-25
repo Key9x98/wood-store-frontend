@@ -30,28 +30,62 @@ while ( have_posts() ) :
     <div class="product-detail">
 
       <?php
-      // Thu thập tất cả ảnh: ảnh chính + gallery phụ
+      // Thu thập tất cả ảnh: ảnh chính + gallery (WooCommerce + custom)
+      // 1. Lấy gallery từ WooCommerce _product_image_gallery
+      $wc_gallery_str   = get_post_meta( get_the_ID(), '_product_image_gallery', true );
+      $wc_gallery_ids   = $wc_gallery_str ? array_filter( array_map( 'intval', explode( ',', $wc_gallery_str ) ) ) : array();
+      
+      // 2. Lấy gallery từ custom meta _fb_gallery
       $fb_gallery_ids   = get_post_meta( get_the_ID(), '_fb_gallery', true );
       $fb_gallery_ids   = is_array( $fb_gallery_ids ) ? array_filter( array_map( 'intval', $fb_gallery_ids ) ) : array();
+      
+      // 3. Merge galleries (WooCommerce + custom, loại bỏ trùng lặp)
+      $all_gallery_ids  = array_unique( array_merge( $wc_gallery_ids, $fb_gallery_ids ) );
+      
       $fb_has_thumbnail = has_post_thumbnail();
       $fb_all_images    = array();
 
+      // Ảnh chính (featured image)
       if ( $fb_has_thumbnail ) {
         $fb_all_images[] = array(
+          'type'  => 'image',
           'url'   => get_the_post_thumbnail_url( get_the_ID(), 'fb-product-lg' ),
           'thumb' => get_the_post_thumbnail_url( get_the_ID(), 'thumbnail' ),
           'alt'   => esc_attr( get_the_title() ),
         );
       }
-      foreach ( $fb_gallery_ids as $fb_gid ) {
-        $fb_full  = wp_get_attachment_image_url( $fb_gid, 'fb-product-lg' );
-        $fb_thumb = wp_get_attachment_image_url( $fb_gid, 'thumbnail' );
-        if ( $fb_full ) {
+      
+      // Các ảnh/video trong gallery
+      foreach ( $all_gallery_ids as $att_id ) {
+        $mime_type = get_post_mime_type( $att_id );
+        $is_video  = $mime_type && strpos( $mime_type, 'video' ) !== false;
+        
+        if ( $is_video ) {
+          // Video
+          $video_url = wp_get_attachment_url( $att_id );
+          $poster    = get_post_meta( $att_id, '_video_poster', true );
+          if ( ! $poster ) {
+            // Fallback: dùng placeholder hoặc frame đầu
+            $poster = FB_URI . '/assets/images/video-placeholder.jpg';
+          }
           $fb_all_images[] = array(
-            'url'   => $fb_full,
-            'thumb' => $fb_thumb ?: $fb_full,
-            'alt'   => esc_attr( get_post_meta( $fb_gid, '_wp_attachment_image_alt', true ) ?: get_the_title() ),
+            'type'  => 'video',
+            'url'   => $video_url,
+            'thumb' => $poster,
+            'alt'   => esc_attr( get_the_title() ) . ' - Video',
           );
+        } else {
+          // Ảnh
+          $fb_full  = wp_get_attachment_image_url( $att_id, 'fb-product-lg' );
+          $fb_thumb = wp_get_attachment_image_url( $att_id, 'thumbnail' );
+          if ( $fb_full ) {
+            $fb_all_images[] = array(
+              'type'  => 'image',
+              'url'   => $fb_full,
+              'thumb' => $fb_thumb ?: $fb_full,
+              'alt'   => esc_attr( get_post_meta( $att_id, '_wp_attachment_image_alt', true ) ?: get_the_title() ),
+            );
+          }
         }
       }
       $fb_img_count = count( $fb_all_images );
@@ -63,12 +97,18 @@ while ( have_posts() ) :
           <div class="pg-main" id="fb-pg-main">
             <?php if ( $fb_img_count > 0 ) : ?>
               <?php foreach ( $fb_all_images as $fb_idx => $fb_img ) : ?>
-                <div class="pg-slide<?php echo 0 === $fb_idx ? ' is-active' : ''; ?>" data-index="<?php echo (int) $fb_idx; ?>">
-                  <img src="<?php echo esc_url( $fb_img['url'] ); ?>"
-                       alt="<?php echo $fb_img['alt']; ?>"
-                       class="pg-slide__img"
-                       loading="<?php echo $fb_idx > 0 ? 'lazy' : 'eager'; ?>"
-                       draggable="false">
+                <div class="pg-slide<?php echo 0 === $fb_idx ? ' is-active' : ''; ?>" data-index="<?php echo (int) $fb_idx; ?>" data-type="<?php echo esc_attr( $fb_img['type'] ); ?>">
+                  <?php if ( 'video' === $fb_img['type'] ) : ?>
+                    <video class="pg-slide__video" src="<?php echo esc_url( $fb_img['url'] ); ?>" poster="<?php echo esc_url( $fb_img['thumb'] ); ?>" controls preload="metadata">
+                      Trình duyệt không hỗ trợ video.
+                    </video>
+                  <?php else : ?>
+                    <img src="<?php echo esc_url( $fb_img['url'] ); ?>"
+                         alt="<?php echo $fb_img['alt']; ?>"
+                         class="pg-slide__img"
+                         loading="<?php echo $fb_idx > 0 ? 'lazy' : 'eager'; ?>"
+                         draggable="false">
+                  <?php endif; ?>
                 </div>
               <?php endforeach; ?>
             <?php else : ?>
@@ -119,15 +159,22 @@ while ( have_posts() ) :
         <?php if ( $fb_img_count > 1 ) : ?>
           <div class="pg-thumbs" id="fb-pg-thumbs" role="tablist" aria-label="Ảnh sản phẩm">
             <?php foreach ( $fb_all_images as $fb_idx => $fb_img ) : ?>
-              <button class="pg-thumb<?php echo 0 === $fb_idx ? ' is-active' : ''; ?>"
+              <button class="pg-thumb<?php echo 0 === $fb_idx ? ' is-active' : ''; ?><?php echo 'video' === $fb_img['type'] ? ' pg-thumb--video' : ''; ?>"
                       data-index="<?php echo (int) $fb_idx; ?>"
+                      data-type="<?php echo esc_attr( $fb_img['type'] ); ?>"
                       role="tab"
                       aria-selected="<?php echo 0 === $fb_idx ? 'true' : 'false'; ?>"
-                      aria-label="Ảnh <?php echo (int) ( $fb_idx + 1 ); ?>">
+                      aria-label="<?php echo 'video' === $fb_img['type'] ? 'Video' : 'Ảnh ' . (int) ( $fb_idx + 1 ); ?>">
                 <img src="<?php echo esc_url( $fb_img['thumb'] ); ?>"
                      alt="<?php echo $fb_img['alt']; ?>"
                      loading="lazy"
                      draggable="false">
+                <?php if ( 'video' === $fb_img['type'] ) : ?>
+                  <span class="pg-thumb__video-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+                    <span>Video</span>
+                  </span>
+                <?php endif; ?>
               </button>
             <?php endforeach; ?>
           </div>

@@ -265,13 +265,41 @@ add_shortcode( 'ai_field', function ( $atts ) {
 } );
 
 /* =========================================================================
- * 6. Price helpers
+ * 6. Price helpers — hỗ trợ cả WooCommerce và custom meta
  * ====================================================================== */
 function fb_get_price( $post_id = null ) {
   $post_id = $post_id ? $post_id : get_the_ID();
+  
+  // Ưu tiên lấy giá từ WooCommerce
+  $wc_regular = get_post_meta( $post_id, '_regular_price', true );
+  $wc_sale    = get_post_meta( $post_id, '_sale_price', true );
+  $wc_price   = get_post_meta( $post_id, '_price', true ); // WooCommerce active price
+  
+  // Fallback về custom meta của theme
+  $fb_regular = get_post_meta( $post_id, '_fb_price', true );
+  $fb_sale    = get_post_meta( $post_id, '_fb_sale_price', true );
+  
+  // Xác định giá regular (WooCommerce trước, fallback custom)
+  $regular = 0;
+  if ( $wc_regular !== '' && $wc_regular > 0 ) {
+    $regular = (float) $wc_regular;
+  } elseif ( $wc_price !== '' && $wc_price > 0 ) {
+    $regular = (float) $wc_price;
+  } elseif ( $fb_regular !== '' && $fb_regular > 0 ) {
+    $regular = (float) $fb_regular;
+  }
+  
+  // Xác định giá sale
+  $sale = 0;
+  if ( $wc_sale !== '' && $wc_sale > 0 ) {
+    $sale = (float) $wc_sale;
+  } elseif ( $fb_sale !== '' && $fb_sale > 0 ) {
+    $sale = (float) $fb_sale;
+  }
+  
   return array(
-    'regular' => (float) get_post_meta( $post_id, '_fb_price', true ),
-    'sale'    => (float) get_post_meta( $post_id, '_fb_sale_price', true ),
+    'regular' => $regular,
+    'sale'    => $sale,
   );
 }
 
